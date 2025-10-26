@@ -17,9 +17,14 @@ use Illuminate\Support\Facades\Route;
 //     return view('welcome');
 // });
 
+// ジェネレータのindex
+Route::get('/', [App\Http\Controllers\GeneratorController::class, 'index'])->name('index');
+
+// ログイン画面
+Route::get('/login', [App\Http\Controllers\HomeController::class, 'login'])->name('login');
 Auth::routes();
 
-Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
 Route::prefix('items')->group(function () {
     Route::get('/', [App\Http\Controllers\ItemController::class, 'index']);
