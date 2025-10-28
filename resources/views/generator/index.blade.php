@@ -10,6 +10,22 @@
 
 <body class="container">
 
+    <nav class="navbar navbar-expand-lg navbar-light bg-light mb-4">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="/">LaraMate</a>
+            <div class="ms-auto">
+                @guest
+                <a href="{{ route('login') }}" class="btn btn-outline-primary me-2">ログイン</a>
+                <a href="{{ route('register') }}" class="btn btn-primary">新規登録</a>
+                @endguest
+
+                @auth
+                <a href="{{ route('home') }}" class="btn btn-success">ダッシュボードへ</a>
+                @endauth
+            </div>
+        </div>
+    </nav>
+
     <h1>LaraMate 命名ジェネレータ</h1>
     <p>キーワードを入力すると、モデル・テーブル・コントローラ・ビュー・DB名を自動生成し、手順に反映します。</p>
     <p>手順に沿って進めることで、ミスなくLaravelの新規プロジェクトを構築できます。</p>
@@ -17,7 +33,7 @@
     <div class="keyword-box mb-4">
         <div class="input-group">
             <span class="input-group-text">キーワード</span>
-            <input type="text" id="keyword" class="form-control" placeholder="例：memberlist">
+            <input type="text" id="keyword" class="form-control" placeholder="例：member">
 
             <select id="env-select" class="form-select" style="max-width: 150px;">
                 <option value="" disabled selected>開発環境</option>
@@ -37,6 +53,19 @@
     </div>
 
     <div id="result-table"></div>
+    <!-- ユーザーのログイン状態によって登録ボタンの表示・非表示を分ける -->
+    @auth
+    <div class="text-end mt-3">
+        <button class="btn btn-primary">データベースに登録</button>
+    </div>
+    @endauth
+
+    @guest
+    <p class="text-muted">保存機能を使うにはログインが必要です。</p>
+    <a href="{{ route('login') }}" class="btn btn-outline-primary">ログインして使う</a>
+    @endguest
+
+
 
     <hr>
 
