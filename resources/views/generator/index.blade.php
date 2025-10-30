@@ -8,11 +8,13 @@
     <link rel="stylesheet" href="{{ asset('css/style.css') }}">
 </head>
 
-<body class="container">
+<body class="container" data-page="welcome">
 
     <nav class="navbar navbar-expand-lg navbar-light bg-light mb-4">
         <div class="container">
-            <a class="navbar-brand fw-bold" href="/">LaraMate</a>
+            <a class="navbar-brand fw-bold" href="/">
+                <img src="{{ asset('img/white.png') }}" alt="LaraMate ロゴ" height="50">
+            </a>
             <div class="ms-auto">
                 @guest
                 <a href="{{ route('login') }}" class="btn btn-outline-primary me-2">ログイン</a>
@@ -26,7 +28,7 @@
         </div>
     </nav>
 
-    <h1>LaraMate 命名ジェネレータ</h1>
+
     <p>キーワードを入力すると、モデル・テーブル・コントローラ・ビュー・DB名を自動生成し、手順に反映します。</p>
     <p>手順に沿って進めることで、ミスなくLaravelの新規プロジェクトを構築できます。</p>
 
@@ -53,17 +55,7 @@
     </div>
 
     <div id="result-table"></div>
-    <!-- ユーザーのログイン状態によって登録ボタンの表示・非表示を分ける -->
-    @auth
-    <div class="text-end mt-3">
-        <button class="btn btn-primary">データベースに登録</button>
-    </div>
-    @endauth
 
-    @guest
-    <p class="text-muted">保存機能を使うにはログインが必要です。</p>
-    <a href="{{ route('login') }}" class="btn btn-outline-primary">ログインして使う</a>
-    @endguest
 
 
 

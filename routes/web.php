@@ -1,5 +1,8 @@
 <?php
 
+use App\Http\Controllers\HomeController;
+use App\Http\Controllers\itemController;
+use App\Http\Controllers\GeneratorController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -17,7 +20,7 @@ use Illuminate\Support\Facades\Route;
 //     return view('welcome');
 // });
 
-// ジェネレータのindex
+// index(TOPページ)
 Route::get('/', [App\Http\Controllers\GeneratorController::class, 'index'])->name('index');
 
 // ログイン画面
