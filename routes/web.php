@@ -1,36 +1,26 @@
+
 <?php
 
 use App\Http\Controllers\HomeController;
-use App\Http\Controllers\itemController;
+use App\Http\Controllers\ItemController;
 use App\Http\Controllers\GeneratorController;
 use Illuminate\Support\Facades\Route;
-
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider and all of them will
-| be assigned to the "web" middleware group. Make something great!
-|
-*/
-
-// Route::get('/', function () {
-//     return view('welcome');
-// });
+use Illuminate\Support\Facades\Auth;
 
 // index(TOPページ)
-Route::get('/', [App\Http\Controllers\GeneratorController::class, 'index'])->name('index');
+Route::get('/', [GeneratorController::class, 'index'])->name('index');
 
-// ログイン画面
-Route::get('/login', [App\Http\Controllers\HomeController::class, 'login'])->name('login');
+// 認証ルート（ログイン・登録・パスワードリセット含む）
 Auth::routes();
 
-Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+// ログイン後の画面
+Route::get('/home', [HomeController::class, 'index'])
+    ->name('home')
+    ->middleware('auth'); // ←追加推奨（ログインしてない人をリダイレクト）
 
+// item関連ルート
 Route::prefix('items')->group(function () {
-    Route::get('/', [App\Http\Controllers\ItemController::class, 'index']);
-    Route::get('/add', [App\Http\Controllers\ItemController::class, 'add']);
-    Route::post('/add', [App\Http\Controllers\ItemController::class, 'add']);
+    Route::get('/', [ItemController::class, 'index']);
+    Route::get('/add', [ItemController::class, 'add']);
+    Route::post('/add', [ItemController::class, 'add']);
 });
