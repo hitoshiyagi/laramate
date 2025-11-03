@@ -9,13 +9,12 @@
 <link rel="stylesheet" href="{{ asset('css/style.css') }}">
 @stop
 
-
 @section('content')
 <div class="container" data-page="welcome">
     <div class="row justify-content-center">
         <div class="col-md-10">
 
-            {{-- ✅ プロジェクト作成カード --}}
+            {{-- プロジェクト作成カード --}}
             <div class="card mt-4" id="project-card">
                 <div class="card-header">プロジェクト作成</div>
                 <div class="card-body">
@@ -30,33 +29,34 @@
 
                     <div class="row mb-0">
                         <div class="col-md-6 offset-md-4">
-                            <button type="button" class="btn btn-primary" id="create-project-btn">登録する</button>
+                            <button type="button" class="btn btn-primary" id="create-project-btn">要素名の生成へ進む</button>
                         </div>
                     </div>
                 </div>
             </div>
 
-            {{-- ✅ 要素群生成カード（最初は非表示） --}}
+            {{-- 要素名生成カード --}}
             <div class="card mt-4" id="element-card" style="display:none;">
-                <div class="card-header">
-                    要素群生成
-                </div>
+                <div class="card-header">要素名生成</div>
                 <div class="card-body">
                     <form id="element-form">
+                        {{-- プロジェクト名表示 --}}
                         <div class="row mb-3">
-                            <label id="project-name" class="col-md-4 col-form-label text-md-end">プロジェクト名</label>
+                            <label class="col-md-4 col-form-label text-md-end">プロジェクト名</label>
                             <div class="col-md-6">
                                 <input type="text" id="element-project-name" class="form-control" readonly>
                             </div>
                         </div>
 
+                        {{-- 要素名キーワード --}}
                         <div class="row mb-3">
-                            <label for="keyword" class="col-md-4 col-form-label text-md-end">要素群キーワード</label>
+                            <label for="keyword" class="col-md-4 col-form-label text-md-end">要素名キーワード</label>
                             <div class="col-md-6">
                                 <input type="text" name="keyword" id="keyword" class="form-control" placeholder="例：member" required>
                             </div>
                         </div>
 
+                        {{-- 開発環境 --}}
                         <div class="row mb-3">
                             <label for="env-select" class="col-md-4 col-form-label text-md-end">開発環境</label>
                             <div class="col-md-6">
@@ -68,6 +68,7 @@
                             </div>
                         </div>
 
+                        {{-- Laravel バージョン --}}
                         <div class="row mb-3">
                             <label for="laravel-version" class="col-md-4 col-form-label text-md-end">Laravelバージョン</label>
                             <div class="col-md-6">
@@ -80,20 +81,29 @@
                             </div>
                         </div>
 
+                        {{-- 生成ボタン --}}
                         <div class="row mb-0">
                             <div class="col-md-6 offset-md-4">
-                                <button type="submit" class="btn btn-primary" id="generate-elements">生成する</button>
+                                <button type="button" class="btn btn-success" id="preview-elements">要素名を生成する</button>
                             </div>
                         </div>
                     </form>
 
-                    {{-- ✅ 生成結果表示エリア --}}
+                    {{-- 生成結果プレビュー --}}
                     <div id="generation-result" class="mt-4" style="display:none;">
-                        <h5>生成結果</h5>
-                        <pre id="result-output" class="p-3 bg-light border rounded"></pre>
+                        <div id="result-table" class="bg-light"></div>
 
-                        <h5 class="mt-3">手順</h5>
-                        <ol id="generation-steps" class="ps-4"></ol>
+                        <div class="mt-3 col-md-6 offset-md-4">
+                            <button class="btn btn-primary" id="register-elements">登録する</button>
+                            <button class="btn btn-secondary" id="clear-elements">クリア</button>
+                            <div id="generation-message" class="mt-2 text-success" style="display:none;"></div>
+
+                        </div>
+
+                        <div id="generation-steps-area" style="display:none;" class="mt-4">
+                            <h5>登録後の手順</h5>
+                            <ol id="generation-steps" class="ps-4"></ol>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -101,6 +111,10 @@
         </div>
     </div>
 </div>
+
+{{-- CSRF トークン --}}
+<meta name="csrf-token" content="{{ csrf_token() }}">
+
 @section('js')
 <script src="{{ asset('js/common.js') }}"></script>
 <script src="{{ asset('js/project.js') }}"></script>

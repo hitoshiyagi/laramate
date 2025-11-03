@@ -26,17 +26,15 @@ document.addEventListener("DOMContentLoaded", () => {
                 .then((res) => res.json())
                 .then((data) => {
                     if (data.success) {
-                        // ✅ 要素群生成カードを表示
+                        // 要素名生成カードを表示
                         document.getElementById("element-card").style.display =
                             "block";
 
-                        // ✅ プロジェクト名を反映
-                        document.getElementById("project-name").textContent =
-                            data.project.name;
+                        // プロジェクト名を反映
                         document.getElementById("element-project-name").value =
                             data.project.name;
 
-                        // ✅ プロジェクト作成カードを非表示
+                        // プロジェクト作成カードを非表示
                         document.getElementById("project-card").style.display =
                             "none";
                     } else {

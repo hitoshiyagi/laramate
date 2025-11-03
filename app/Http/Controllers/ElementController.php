@@ -8,6 +8,7 @@ use App\Models\Project;
 
 class ElementController extends Controller
 {
+    // DBに保存する
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -17,6 +18,7 @@ class ElementController extends Controller
             'laravel_version' => 'required|string'
         ]);
 
+        // プロジェクト名からIDを取得
         $project = Project::where('name', $validated['project_name'])->first();
 
         if (!$project) {
@@ -26,6 +28,7 @@ class ElementController extends Controller
             ]);
         }
 
+        // DB登録
         $element = Element::create([
             'project_id' => $project->id,
             'keyword' => $validated['keyword'],
@@ -33,7 +36,13 @@ class ElementController extends Controller
             'laravel_version' => $validated['laravel_version'],
         ]);
 
+        // 手順を生成
         $steps = [
+            "プロジェクトフォルダ '{$project->name}' を作成",
+            "Laravel {$element->laravel_version} をインストール",
+            "{$element->keyword} モデルを作成",
+            "{$element->keyword} コントローラを作成",
+            "{$element->keyword} ビューを作成",
             "プロジェクトフォルダ '{$project->name}' を作成",
             "Laravel {$element->laravel_version} をインストール",
             "{$element->keyword} モデルを作成",
@@ -43,36 +52,19 @@ class ElementController extends Controller
 
         return response()->json([
             'success' => true,
-            'element' => [
-                'id' => $element->id,
-                'project_name' => $project->name,
-                'repository' => $project->repository, // ここでリポジトリ名も返す
-                'keyword' => $element->keyword,
-                'env' => $element->env,
-                'laravel_version' => $element->laravel_version
-            ],
+            'element' => $element,
             'steps' => $steps
         ]);
     }
 
+    // 要素一覧取得
     public function index()
     {
-        // リレーションを読み込んでプロジェクト名とリポジトリ名も取得
-        $elements = Element::with('project')->orderBy('created_at', 'desc')->get();
+        $elements = Element::orderBy('created_at', 'desc')->get();
 
         return response()->json([
             'success' => true,
-            'elements' => $elements->map(function ($el) {
-                return [
-                    'id' => $el->id,
-                    'project_name' => $el->project->name,
-                    'repository' => $el->project->repository,
-                    'keyword' => $el->keyword,
-                    'env' => $el->env,
-                    'laravel_version' => $el->laravel_version,
-                    'created_at' => $el->created_at->format('Y-m-d H:i')
-                ];
-            })
+            'elements' => $elements,
         ]);
     }
 }

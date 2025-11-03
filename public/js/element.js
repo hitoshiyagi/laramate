@@ -1,39 +1,81 @@
+// element.js 完全版
 document.addEventListener("DOMContentLoaded", () => {
-    const csrfToken = document
-        .querySelector('meta[name="csrf-token"]')
-        .getAttribute("content");
-
-    const form = document.getElementById("element-form");
-
-    if (!form) {
-        console.log("form が見つかりません");
-        return;
+    // 英単語複数形変換（簡易）
+    function pluralize(word) {
+        word = word.toLowerCase();
+        if (word.endsWith("y")) return word.slice(0, -1) + "ies";
+        if (
+            ["s", "x", "z"].includes(word.slice(-1)) ||
+            word.endsWith("ch") ||
+            word.endsWith("sh")
+        )
+            return word + "es";
+        return word + "s";
     }
 
-    console.log("form 要素を検出。submit イベント登録完了予定。");
+    // 生成ボタン
+    const previewBtn = document.getElementById("preview-elements");
+    const registerBtn = document.getElementById("register-elements");
+    const clearBtn = document.getElementById("clear-elements");
 
-    // -----------------------------
-    // 登録処理
-    // -----------------------------
-    form.addEventListener("submit", (e) => {
-        e.preventDefault();
-
-        if (!confirm("要素群を登録していいですか？")) {
-            return;
-        }
-
+    previewBtn.addEventListener("click", () => {
+        const keyword = document.getElementById("keyword").value.trim();
+        const env = document.getElementById("env-select").value;
+        const laravelVersion = document.getElementById("laravel-version").value;
         const projectName = document.getElementById(
             "element-project-name"
         ).value;
-        const keyword = document.getElementById("keyword").value;
+
+        if (!keyword || !env || !laravelVersion) {
+            alert("キーワード・環境・Laravelバージョンを選択してください");
+            return;
+        }
+
+        const Table = pluralize(keyword);
+        const Model = keyword.charAt(0).toUpperCase() + keyword.slice(1);
+        const Controller = Model + "Controller";
+        const DB = keyword.toLowerCase() + "_db";
+        const Repo = keyword.toLowerCase() + "-app";
+
+        // プレビュー表示
+        const tableHTML = `
+            <table class="table table-bordered table-striped mt-3">
+                <thead><tr><th>項目</th><th>生成結果</th></tr></thead>
+                <tbody>
+                    <tr><td>プロジェクト名</td><td>${projectName}</td></tr>
+                    <tr><td>GitHubリポジトリ名</td><td>${Repo}</td></tr>
+                    <tr><td>DB名</td><td>${DB}</td></tr>
+                    <tr><td>モデル名</td><td>${Model}</td></tr>
+                    <tr><td>テーブル名</td><td>${Table}</td></tr>
+                    <tr><td>コントローラ名</td><td>${Controller}</td></tr>
+                    <tr><td>ビュー</td><td>${Table}/index.blade.php</td></tr>
+                </tbody>
+            </table>`;
+        document.getElementById("result-table").innerHTML = tableHTML;
+
+        // ボタン表示
+        document.getElementById("generation-result").style.display = "block";
+        registerBtn.style.display = "inline-block";
+        clearBtn.style.display = "inline-block";
+        document.getElementById("generation-steps-area").style.display = "none";
+    });
+
+    // DB登録
+    registerBtn.addEventListener("click", () => {
+        const keyword = document.getElementById("keyword").value.trim();
         const env = document.getElementById("env-select").value;
         const laravelVersion = document.getElementById("laravel-version").value;
+        const projectName = document.getElementById(
+            "element-project-name"
+        ).value;
 
         fetch("/elements/store", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-                "X-CSRF-TOKEN": csrfToken,
+                "X-CSRF-TOKEN": document
+                    .querySelector('meta[name="csrf-token"]')
+                    .getAttribute("content"),
             },
             body: JSON.stringify({
                 project_name: projectName,
@@ -44,94 +86,33 @@ document.addEventListener("DOMContentLoaded", () => {
         })
             .then((res) => res.json())
             .then((data) => {
-                if (data.success) {
-                    console.log("要素登録成功:", data.element);
-
-                    // ✅ 結果表示エリア
-                    const resultDiv =
-                        document.getElementById("generation-result");
-                    const output = document.getElementById("result-output");
-                    const stepsList =
-                        document.getElementById("generation-steps");
-
-                    resultDiv.style.display = "block";
-
-                    output.textContent =
-                        `プロジェクト名：${data.element.project_name}\n` +
-                        `リポジトリ名：${data.element.repository}\n` +
-                        `要素名（キーワード）：${data.element.keyword}\n` +
-                        `開発環境：${data.element.env}\n` +
-                        `Laravelバージョン：${data.element.laravel_version}`;
-
-                    // ✅ 手順リストの生成
-                    stepsList.innerHTML = "";
-                    data.steps.forEach((step) => {
-                        const li = document.createElement("li");
-                        li.textContent = step;
-                        stepsList.appendChild(li);
-                    });
-
-                    // ✅ 登録後に一覧を更新
-                    loadElements();
-                } else {
-                    alert("登録に失敗しました: " + data.message);
-                }
+        const messageDiv = document.getElementById("generation-message");
+        if (data.success) {
+            // ページ内に表示
+            messageDiv.textContent = "要素名を登録しました。";
+            messageDiv.style.display = "block";
+            // 手順表示
+            const steps = data.steps.map((s) => `<li>${s}</li>`).join("");
+            document.getElementById("generation-steps").innerHTML = steps;
+            document.getElementById("generation-steps-area").style.display =
+                "block";
+        } else {
+            alert("登録に失敗しました: " + data.message);
+        }
             })
-            .catch((err) => {
-                console.error("通信エラー:", err);
-                alert("通信エラーが発生しました。");
-            });
+            .catch(() => alert("通信エラーが発生しました"));
     });
 
-    // -----------------------------
-    // 一覧表示処理
-    // -----------------------------
-    function loadElements() {
-        fetch("/elements")
-            .then((res) => res.json())
-            .then((data) => {
-                if (!data.success) return;
-
-                const tableDiv = document.getElementById("result-table");
-                tableDiv.innerHTML = ""; // 既存内容をクリア
-
-                const table = document.createElement("table");
-                table.classList.add("table", "table-bordered");
-
-                const thead = document.createElement("thead");
-                thead.innerHTML = `
-                    <tr>
-                        <th>プロジェクト名</th>
-                        <th>GitHubリポジトリ名</th>
-                        <th>キーワード</th>
-                        <th>開発環境</th>
-                        <th>Laravelバージョン</th>
-                        <th>作成日</th>
-                    </tr>
-                `;
-                table.appendChild(thead);
-
-                const tbody = document.createElement("tbody");
-                data.elements.forEach((el) => {
-                    const tr = document.createElement("tr");
-                    tr.innerHTML = `
-                        <td>${el.project_name}</td>
-                        <td>${el.repository}</td>
-                        <td>${el.keyword}</td>
-                        <td>${el.env}</td>
-                        <td>${el.laravel_version}</td>
-                        <td>${el.created_at}</td>
-                    `;
-                    tbody.appendChild(tr);
-                });
-
-                table.appendChild(tbody);
-                tableDiv.appendChild(table);
-            });
-    }
-
-    // -----------------------------
-    // 初期読み込みで一覧表示
-    // -----------------------------
-    loadElements();
+    // クリアボタン
+    clearBtn.addEventListener("click", () => {
+        document.getElementById("keyword").value = "";
+        document.getElementById("env-select").value = "";
+        document.getElementById("laravel-version").value = "";
+        document.getElementById("generation-result").style.display = "none";
+        registerBtn.style.display = "none";
+        clearBtn.style.display = "none";
+        document.getElementById("result-table").innerHTML = "";
+        document.getElementById("generation-steps").innerHTML = "";
+        document.getElementById("generation-steps-area").style.display = "none";
+    });
 });
