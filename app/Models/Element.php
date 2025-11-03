@@ -9,16 +9,14 @@ class Element extends Model
 {
     use HasFactory;
 
-    // 代入可能なカラムを指定
     protected $fillable = [
         'project_id',
-        'name',
-        'db',
-        'model',
-        'table',
+        'keyword',
+        'env',
+        'laravel_version',
     ];
 
-    // 🔸 要素群は一つのプロジェクトに属する
+    // 🔸 要素群は1つのプロジェクトに属する
     public function project()
     {
         return $this->belongsTo(Project::class);

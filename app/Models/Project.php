@@ -11,10 +11,7 @@ class Project extends Model
 
     // 一括代入を許可するカラムを指定
     protected $fillable = [
-        'name',
-        'repo',
-        'description',
-        'user_id', 
+        'name'
     ];
 
     // 🔸 一つのプロジェクトは複数の要素群（elements）を持つ

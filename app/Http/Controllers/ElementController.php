@@ -2,32 +2,52 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Project;
-use App\Models\Element;
 use Illuminate\Http\Request;
+use App\Models\Element;
+use App\Models\Project;
 
 class ElementController extends Controller
 {
-   // 要素郡作成フォーム
-   public function create(Project $project)
-   {
-    return view('elements.create', compact('project'));
-   }
-
-    // 要素郡登録処理 
-    public function store(Request $request, Project $project)
+    public function store(Request $request)
     {
-        $validated = $request->validate(([
-            'name' => 'required|string|max:255',
-            'db' => 'nullable|string|max:255',
-            'model' => 'nullable|string|max:255',
-            'table' => 'nullable|string|max:255',
-        ]));
-$project->elements()->create($validated);
+        $validated = $request->validate([
+            'project_name' => 'required|string|max:255',
+            'keyword' => 'required|string|max:255',
+            'env' => 'required|string',
+            'laravel_version' => 'required|string'
+        ]);
 
-return redirect()->route('projects.show', $project)
-->with('success','要A素名を追加しました！');
+        // プロジェクト名からIDを取得（なければエラー返却）
+        $project = Project::where('name', $validated['project_name'])->first();
 
+        if (!$project) {
+            return response()->json([
+                'success' => false,
+                'message' => '指定されたプロジェクトが存在しません。'
+            ]);
+        }
+
+        // 🔸 project_id で要素群を紐付け
+        $element = Element::create([
+            'project_id' => $project->id,
+            'keyword' => $validated['keyword'],
+            'env' => $validated['env'],
+            'laravel_version' => $validated['laravel_version'],
+        ]);
+
+        // 🔸 初学者向け手順
+        $steps = [
+            "プロジェクトフォルダ '{$project->name}' を作成",
+            "Laravel {$element->laravel_version} をインストール",
+            "{$element->keyword} モデルを作成",
+            "{$element->keyword} コントローラを作成",
+            "{$element->keyword} ビューを作成"
+        ];
+
+        return response()->json([
+            'success' => true,
+            'element' => $element,
+            'steps' => $steps
+        ]);
     }
-
 }

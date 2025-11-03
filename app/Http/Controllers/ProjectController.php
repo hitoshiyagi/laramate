@@ -8,7 +8,30 @@ use Illuminate\Support\Facades\Auth;
 
 class ProjectController extends Controller
 {
-        // 一覧表示
+    // プロジェクト名を入力
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'name' => 'required|string|max:255'
+        ]);
+
+        $project = Project::create([
+            'name' => $validated['name']
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'project' => $project
+        ]);
+    }
+
+    public function create()
+    {
+        return view('projects.index'); // ← プロジェクト作成画面のView
+    }
+
+
+    // 詳細ページ一覧表示
     public function index()
     {
         // ログインユーザーのプロジェクト一覧を取得

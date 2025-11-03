@@ -1,4 +1,3 @@
-
 <?php
 
 use App\Http\Controllers\HomeController;
@@ -9,31 +8,37 @@ use App\Http\Controllers\GeneratorController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 
-// index(TOPページ)
+// ==========================
+// TOPページ & 認証ルート
+// ==========================
 Route::get('/', [GeneratorController::class, 'index'])->name('index');
-
-// 認証ルート（ログイン・登録・パスワードリセット含む）
 Auth::routes();
+Route::get('/home', [HomeController::class, 'index'])->name('home')->middleware('auth');
 
-// ログイン後の画面
-Route::get('/home', [HomeController::class, 'index'])
-    ->name('home')
-    ->middleware('auth'); // ←追加推奨（ログインしてない人をリダイレクト）
-
-// item関連ルート
+// ==========================
+// Item関連
+// ==========================
 Route::prefix('items')->group(function () {
     Route::get('/', [ItemController::class, 'index']);
     Route::get('/add', [ItemController::class, 'add']);
     Route::post('/add', [ItemController::class, 'add']);
 });
 
-// project関連ルート
+// ==========================
+// Project関連
+// ==========================
 Route::prefix('projects')->group(function () {
     Route::get('/', [ProjectController::class, 'index'])->name('projects.index');
     Route::get('/create', [ProjectController::class, 'create'])->name('projects.create');
-    Route::post('/', [ProjectController::class, 'store'])->name('projects.store');
+    Route::post('/store', [ProjectController::class, 'store'])->name('projects.store');
     Route::get('/{project}', [ProjectController::class, 'show'])->name('projects.show');
 
+    // 要素群（プロジェクト単位）
     Route::get('{project}/elements/create', [ElementController::class, 'create'])->name('elements.create');
-    Route::post('/{project}/elements', [ElementController::class, 'store'])->name('elements.store');
+    Route::post('{project}/elements', [ElementController::class, 'store'])->name('elements.store.project');
 });
+
+// ==========================
+// Ajax専用（プロジェクト外から登録する用）
+// ==========================
+Route::post('/elements/store', [ElementController::class, 'store'])->name('elements.store');
