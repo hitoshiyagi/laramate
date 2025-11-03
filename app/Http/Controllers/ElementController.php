@@ -17,7 +17,6 @@ class ElementController extends Controller
             'laravel_version' => 'required|string'
         ]);
 
-        // プロジェクト名からIDを取得（なければエラー返却）
         $project = Project::where('name', $validated['project_name'])->first();
 
         if (!$project) {
@@ -27,7 +26,6 @@ class ElementController extends Controller
             ]);
         }
 
-        // 🔸 project_id で要素群を紐付け
         $element = Element::create([
             'project_id' => $project->id,
             'keyword' => $validated['keyword'],
@@ -35,7 +33,6 @@ class ElementController extends Controller
             'laravel_version' => $validated['laravel_version'],
         ]);
 
-        // 🔸 初学者向け手順
         $steps = [
             "プロジェクトフォルダ '{$project->name}' を作成",
             "Laravel {$element->laravel_version} をインストール",
@@ -46,8 +43,36 @@ class ElementController extends Controller
 
         return response()->json([
             'success' => true,
-            'element' => $element,
+            'element' => [
+                'id' => $element->id,
+                'project_name' => $project->name,
+                'repository' => $project->repository, // ここでリポジトリ名も返す
+                'keyword' => $element->keyword,
+                'env' => $element->env,
+                'laravel_version' => $element->laravel_version
+            ],
             'steps' => $steps
+        ]);
+    }
+
+    public function index()
+    {
+        // リレーションを読み込んでプロジェクト名とリポジトリ名も取得
+        $elements = Element::with('project')->orderBy('created_at', 'desc')->get();
+
+        return response()->json([
+            'success' => true,
+            'elements' => $elements->map(function ($el) {
+                return [
+                    'id' => $el->id,
+                    'project_name' => $el->project->name,
+                    'repository' => $el->project->repository,
+                    'keyword' => $el->keyword,
+                    'env' => $el->env,
+                    'laravel_version' => $el->laravel_version,
+                    'created_at' => $el->created_at->format('Y-m-d H:i')
+                ];
+            })
         ]);
     }
 }

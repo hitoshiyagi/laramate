@@ -58,6 +58,29 @@
         <div id="result-table"></div>
         <div id="steps" class="mb3">
 
+            {{-- ✅ 登録済み要素一覧 --}}
+            <div id="elements-list" class="mt-5">
+                <h5>登録済みの要素一覧</h5>
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>プロジェクト名</th>
+                            <th>キーワード</th>
+                            <th>環境</th>
+                            <th>Laravelバージョン</th>
+                            <th>登録日時</th>
+                        </tr>
+                    </thead>
+                    <tbody id="elements-table-body">
+                        <tr>
+                            <td colspan="6">読み込み中...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+
             <div class="mb-4">
                 <h3>ステップ①：作業フォルダに移動</h3>
                 <p>任意の作業フォルダ（例：Laravelなど）にターミナルで移動します。このフォルダ内に新しいプロジェクトが作成されます。</p>

@@ -42,3 +42,8 @@ Route::prefix('projects')->group(function () {
 // Ajax専用（プロジェクト外から登録する用）
 // ==========================
 Route::post('/elements/store', [ElementController::class, 'store'])->name('elements.store');
+
+// ==========================
+// 登録した要素の一覧表示
+// ==========================
+Route::get('/elements', [ElementController::class, 'index'])->name('elements.index');
