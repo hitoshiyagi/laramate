@@ -99,17 +99,17 @@
                             <div id="generation-message" class="mt-2 text-success" style="display:none;"></div>
 
                         </div>
-
                         <div id="generation-steps-area" style="display:none;" class="mt-4">
                             <h5>登録後の手順</h5>
-                            <ol id="generation-steps" class="ps-4"></ol>
+                            <div id="generation-steps" class="d-flex flex-column gap-3 mb-3"></div>
                         </div>
                     </div>
                 </div>
             </div>
-
         </div>
+
     </div>
+</div>
 </div>
 
 {{-- CSRF トークン --}}

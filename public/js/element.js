@@ -1,4 +1,3 @@
-// element.js 完全版
 document.addEventListener("DOMContentLoaded", () => {
     // 英単語複数形変換（簡易）
     function pluralize(word) {
@@ -13,11 +12,21 @@ document.addEventListener("DOMContentLoaded", () => {
         return word + "s";
     }
 
-    // 生成ボタン
     const previewBtn = document.getElementById("preview-elements");
     const registerBtn = document.getElementById("register-elements");
     const clearBtn = document.getElementById("clear-elements");
 
+    // コードコピー関数
+    window.copyCode = function (button) {
+        const code = button
+            .closest(".code-container")
+            .querySelector("code").innerText;
+        navigator.clipboard.writeText(code);
+        button.textContent = "✅ コピー済み";
+        setTimeout(() => (button.textContent = "📋 コピー"), 1500);
+    };
+
+    // プレビュー表示
     previewBtn.addEventListener("click", () => {
         const keyword = document.getElementById("keyword").value.trim();
         const env = document.getElementById("env-select").value;
@@ -37,7 +46,6 @@ document.addEventListener("DOMContentLoaded", () => {
         const DB = keyword.toLowerCase() + "_db";
         const Repo = keyword.toLowerCase() + "-app";
 
-        // プレビュー表示
         const tableHTML = `
             <table class="table table-bordered table-striped mt-3">
                 <thead><tr><th>項目</th><th>生成結果</th></tr></thead>
@@ -51,9 +59,8 @@ document.addEventListener("DOMContentLoaded", () => {
                     <tr><td>ビュー</td><td>${Table}/index.blade.php</td></tr>
                 </tbody>
             </table>`;
-        document.getElementById("result-table").innerHTML = tableHTML;
 
-        // ボタン表示
+        document.getElementById("result-table").innerHTML = tableHTML;
         document.getElementById("generation-result").style.display = "block";
         registerBtn.style.display = "inline-block";
         clearBtn.style.display = "inline-block";
@@ -86,19 +93,63 @@ document.addEventListener("DOMContentLoaded", () => {
         })
             .then((res) => res.json())
             .then((data) => {
-        const messageDiv = document.getElementById("generation-message");
-        if (data.success) {
-            // ページ内に表示
-            messageDiv.textContent = "要素名を登録しました。";
-            messageDiv.style.display = "block";
-            // 手順表示
-            const steps = data.steps.map((s) => `<li>${s}</li>`).join("");
-            document.getElementById("generation-steps").innerHTML = steps;
-            document.getElementById("generation-steps-area").style.display =
-                "block";
-        } else {
-            alert("登録に失敗しました: " + data.message);
-        }
+                const messageDiv =
+                    document.getElementById("generation-message");
+                if (data.success) {
+                    messageDiv.textContent = "要素名を登録しました。";
+                    messageDiv.style.display = "block";
+
+                    // 手順カードを生成
+                    const container =
+                        document.getElementById("generation-steps");
+                    container.innerHTML = "";
+                    data.steps.forEach((step) => {
+                        const div = document.createElement("div");
+                        div.classList.add(
+                            "step-card",
+                            "p-3",
+                            "border",
+                            "rounded",
+                            "bg-light"
+                        );
+
+                        div.innerHTML = `
+                        <h5>${step.title}</h5>
+                        <p>${step.description || ""}</p>
+                        ${
+                            step.path
+                                ? `<p>対象ファイル・場所: ${step.path}</p>`
+                                : ""
+                        }
+                        ${
+                            step.elementName
+                                ? `<p>使用する要素名: ${step.elementName}</p>`
+                                : ""
+                        }
+                        ${
+                            step.command
+                                ? `
+                            <div class="code-container">
+                                <div class="code-header">
+                                    💾 コード
+                                    <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+                                </div>
+                                <pre class="code-block"><code>${step.command}</code></pre>
+                            </div>
+                        `
+                                : ""
+                        }
+                    `;
+
+                        container.appendChild(div);
+                    });
+
+                    document.getElementById(
+                        "generation-steps-area"
+                    ).style.display = "block";
+                } else {
+                    alert("登録に失敗しました: " + data.message);
+                }
             })
             .catch(() => alert("通信エラーが発生しました"));
     });
@@ -114,5 +165,6 @@ document.addEventListener("DOMContentLoaded", () => {
         document.getElementById("result-table").innerHTML = "";
         document.getElementById("generation-steps").innerHTML = "";
         document.getElementById("generation-steps-area").style.display = "none";
+        document.getElementById("generation-message").style.display = "none";
     });
 });

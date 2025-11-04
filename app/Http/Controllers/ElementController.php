@@ -8,7 +8,6 @@ use App\Models\Project;
 
 class ElementController extends Controller
 {
-    // DBに保存する
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -18,17 +17,11 @@ class ElementController extends Controller
             'laravel_version' => 'required|string'
         ]);
 
-        // プロジェクト名からIDを取得
         $project = Project::where('name', $validated['project_name'])->first();
-
         if (!$project) {
-            return response()->json([
-                'success' => false,
-                'message' => '指定されたプロジェクトが存在しません。'
-            ]);
+            return response()->json(['success' => false, 'message' => '指定されたプロジェクトが存在しません。']);
         }
 
-        // DB登録
         $element = Element::create([
             'project_id' => $project->id,
             'keyword' => $validated['keyword'],
@@ -36,18 +29,43 @@ class ElementController extends Controller
             'laravel_version' => $validated['laravel_version'],
         ]);
 
-        // 手順を生成
+        // 手順データの例
         $steps = [
-            "プロジェクトフォルダ '{$project->name}' を作成",
-            "Laravel {$element->laravel_version} をインストール",
-            "{$element->keyword} モデルを作成",
-            "{$element->keyword} コントローラを作成",
-            "{$element->keyword} ビューを作成",
-            "プロジェクトフォルダ '{$project->name}' を作成",
-            "Laravel {$element->laravel_version} をインストール",
-            "{$element->keyword} モデルを作成",
-            "{$element->keyword} コントローラを作成",
-            "{$element->keyword} ビューを作成"
+            [
+                'title' => 'ステップ①：作業フォルダに移動',
+                'description' => '任意の作業フォルダ（例：Laravelなど）にターミナルで移動します。',
+                'path' => '/Users/you/Projects',
+                'elementName' => '',
+                'command' => 'cd Laravel'
+            ],
+            [
+                'title' => 'ステップ②：Laravelインストール',
+                'description' => 'Laravelの指定バージョンをインストールします。',
+                'path' => '',
+                'elementName' => '',
+                'command' => "composer create-project laravel/laravel {$project->name} \"{$element->laravel_version}\""
+            ],
+            [
+                'title' => 'ステップ③：モデル作成',
+                'description' => "{$element->keyword} モデルを作成します。",
+                'path' => 'app/Models',
+                'elementName' => $element->keyword,
+                'command' => null
+            ],
+            [
+                'title' => 'ステップ④：コントローラ作成',
+                'description' => "{$element->keyword} コントローラを作成します。",
+                'path' => 'app/Http/Controllers',
+                'elementName' => $element->keyword,
+                'command' => null
+            ],
+            [
+                'title' => 'ステップ⑤：ビュー作成',
+                'description' => "{$element->keyword} ビューを作成します。",
+                'path' => 'resources/views/' . strtolower($element->keyword),
+                'elementName' => $element->keyword,
+                'command' => null
+            ]
         ];
 
         return response()->json([
@@ -67,4 +85,7 @@ class ElementController extends Controller
             'elements' => $elements,
         ]);
     }
+
+
 }
+

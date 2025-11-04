@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Auth;
 // ==========================
 // TOPページ & 認証ルート
 // ==========================
-Route::get('/', [GeneratorController::class, 'index'])->name('index');
+Route::get('/', [HomeController::class, 'index'])->name('index');
 Auth::routes();
 Route::get('/home', [HomeController::class, 'index'])->name('home')->middleware('auth');
 
