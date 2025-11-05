@@ -100,49 +100,43 @@ document.addEventListener("DOMContentLoaded", () => {
                     messageDiv.style.display = "block";
 
                     // 手順カードを生成
-                    const container =
-                        document.getElementById("generation-steps");
-                    container.innerHTML = "";
-                    data.steps.forEach((step) => {
-                        const div = document.createElement("div");
-                        div.classList.add(
-                            "step-card",
-                            "p-3",
-                            "border",
-                            "rounded",
-                            "bg-light"
-                        );
+const container = document.getElementById("generation-steps");
+container.innerHTML = "";
 
-                        div.innerHTML = `
-                        <h5>${step.title}</h5>
-                        <p>${step.description || ""}</p>
-                        ${
-                            step.path
-                                ? `<p>対象ファイル・場所: ${step.path}</p>`
-                                : ""
-                        }
-                        ${
-                            step.elementName
-                                ? `<p>使用する要素名: ${step.elementName}</p>`
-                                : ""
-                        }
-                        ${
-                            step.command
-                                ? `
-                            <div class="code-container">
-                                <div class="code-header">
-                                    💾 コード
-                                    <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
-                                </div>
-                                <pre class="code-block"><code>${step.command}</code></pre>
-                            </div>
-                        `
-                                : ""
-                        }
-                    `;
+data.steps.forEach((step, index) => {
+    const div = document.createElement("div");
+    div.classList.add("step-card", "p-3", "border", "rounded", "bg-light");
 
-                        container.appendChild(div);
-                    });
+    // カードの中身
+    div.innerHTML = `
+        <h5 class="fw-bold">${step.title}</h5>
+        <p>${step.description}</p>
+        ${
+            step.command
+                ? `
+            <div class="code-container" style="margin-bottom: 0;">
+                <div class="code-header">
+                    💾 コード
+                    <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+                </div>
+                <pre class="code-block" style="margin-bottom: 0;"><code>${step.command}</code></pre>
+            </div>
+        `
+                : ""
+        }
+    `;
+
+    // カード間の余白を20pxに設定
+    div.style.marginBottom = "20px";
+
+    // 最後のカードだけは余白なし
+    if (index === data.steps.length - 1) {
+        div.style.marginBottom = "0";
+    }
+
+    container.appendChild(div);
+});
+
 
                     document.getElementById(
                         "generation-steps-area"
