@@ -293,12 +293,12 @@ return [
         [
             'text' => '新規プロジェクト作成',
             'url'  => 'projects',
-            'icon' => 'fas fa-gamepad',
+            'icon' => 'fas  fa-pen',
         ],
         [
             'text' => 'プロジェクト一覧',
-            'url'  => 'items',
-            'icon' => 'fas fa-gamepad',
+            'url'  => 'projects/list',
+            'icon' => 'fas fa-book',
         ],
 
         // AdminLTEデフォルト

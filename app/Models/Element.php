@@ -14,6 +14,11 @@ class Element extends Model
         'keyword',
         'env',
         'laravel_version',
+        'table_name',
+        'model_name',
+        'controller_name',
+        'db_name',
+        'repo_name',
     ];
 
     // 🔸 要素群は1つのプロジェクトに属する

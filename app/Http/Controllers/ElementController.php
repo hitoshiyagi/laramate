@@ -8,62 +8,68 @@ use App\Models\Project;
 
 class ElementController extends Controller
 {
+    /**
+     * 要素をDBに登録
+     */
     public function store(Request $request)
     {
+        // バリデーション
         $validated = $request->validate([
-            'project_name' => 'required|string|max:255',
-            'keyword' => 'required|string|max:255',
-            'env' => 'required|string',
-            'laravel_version' => 'required|string'
+            'project_name'      => 'required|string|max:255',
+            'keyword'           => 'required|string|max:255',
+            'env'               => 'required|string|max:50',
+            'laravel_version'   => 'required|string|max:50',
+            'table_name'        => 'required|string|max:255',
+            'model_name'        => 'required|string|max:255',
+            'controller_name'   => 'required|string|max:255',
+            'db_name'           => 'required|string|max:255',
+            'repo_name'         => 'required|string|max:255',
         ]);
 
-        $project = Project::where('name', $validated['project_name'])->first();
-        if (!$project) {
-            return response()->json(['success' => false, 'message' => '指定されたプロジェクトが存在しません。']);
-        }
+        // プロジェクト取得または作成
+        $project = Project::firstOrCreate(
+            ['name' => $validated['project_name']],
+            ['user_id' => auth()->id()]
+        );
 
+        // 要素を作成
         $element = Element::create([
-            'project_id' => $project->id,
-            'keyword' => $validated['keyword'],
-            'env' => $validated['env'],
-            'laravel_version' => $validated['laravel_version'],
+            'project_id'        => $project->id,
+            'keyword'           => $validated['keyword'],
+            'env'               => $validated['env'],
+            'laravel_version'   => $validated['laravel_version'],
+            'table_name'        => $validated['table_name'],
+            'model_name'        => $validated['model_name'],
+            'controller_name'   => $validated['controller_name'],
+            'db_name'           => $validated['db_name'],
+            'repo_name'         => $validated['repo_name'],
         ]);
 
-        // 手順データの例
+        // 登録後の手順例
         $steps = [
             [
                 'title' => 'ステップ①：作業フォルダに移動',
-                'description' => '任意の作業フォルダ（例：Laravelなど）にターミナルで移動します。',
-                'path' => '/Users/you/Projects',
-                'elementName' => '',
+                'description' => '任意の作業フォルダにターミナルで移動します。',
                 'command' => 'cd Laravel'
             ],
             [
                 'title' => 'ステップ②：Laravelインストール',
-                'description' => 'Laravelの指定バージョンをインストールします。',
-                'path' => '',
-                'elementName' => '',
+                'description' => '指定バージョンのLaravelをインストールします。',
                 'command' => "composer create-project laravel/laravel {$project->name} \"{$element->laravel_version}\""
             ],
             [
                 'title' => 'ステップ③：モデル作成',
-                'description' => "{$element->keyword} モデルを作成します。",
-                'path' => 'app/Models',
-                'elementName' => $element->keyword,
-                'command' => null
+                'description' => "{$element->model_name} モデルを作成します。",
+                'command' => "php artisan make:model {$element->model_name}"
             ],
             [
                 'title' => 'ステップ④：コントローラ作成',
-                'description' => "{$element->keyword} コントローラを作成します。",
-                'path' => 'app/Http/Controllers',
-                'elementName' => $element->keyword,
-                'command' => null
+                'description' => "{$element->controller_name} コントローラを作成します。",
+                'command' => "php artisan make:controller {$element->controller_name}"
             ],
             [
                 'title' => 'ステップ⑤：ビュー作成',
-                'description' => "{$element->keyword} ビューを作成します。",
-                'path' => 'resources/views/' . strtolower($element->keyword),
-                'elementName' => $element->keyword,
+                'description' => "{$element->model_name} ビューを作成します。",
                 'command' => null
             ]
         ];
@@ -75,7 +81,9 @@ class ElementController extends Controller
         ]);
     }
 
-    // 要素一覧取得
+    /**
+     * 要素一覧取得
+     */
     public function index()
     {
         $elements = Element::orderBy('created_at', 'desc')->get();
@@ -85,7 +93,4 @@ class ElementController extends Controller
             'elements' => $elements,
         ]);
     }
-
-
 }
-

@@ -11,7 +11,7 @@ use App\Http\Controllers\ItemController;
 // ==========================
 // トップページ（ダッシュボード）
 // ==========================
-Route::get('/', [GeneratorController::class, 'index'])
+Route::get('/', [HomeController::class, 'index'])
     ->name('dashboard')
     ->middleware('auth'); // ログイン必須
 
@@ -35,12 +35,29 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/', [ProjectController::class, 'index'])->name('projects.index');
         Route::get('/create', [ProjectController::class, 'create'])->name('projects.create');
         Route::post('/store', [ProjectController::class, 'store'])->name('projects.store');
+
+        // ここで固定パスのルートを先に置く
+        Route::get('/list', [ProjectController::class, 'list'])->name('projects.list');
+
+        // {project} は最後
         Route::get('/{project}', [ProjectController::class, 'show'])->name('projects.show');
 
         // 要素群（プロジェクト単位）
         Route::get('{project}/elements/create', [ElementController::class, 'create'])->name('elements.create');
         Route::post('{project}/elements', [ElementController::class, 'store'])->name('elements.store.project');
     });
+
+
+    // ==========================
+    // Ajax用 Element登録
+    // ==========================
+    Route::post('/elements/store', [ElementController::class, 'store'])->name('elements.store');
+
+
+    // ==========================
+    // 登録済み Element一覧
+    // ==========================
+    Route::get('/elements', [ElementController::class, 'index'])->name('elements.index');
 
     // ==========================
     // Item関連
@@ -50,14 +67,4 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/add', [ItemController::class, 'add']);
         Route::post('/add', [ItemController::class, 'add']);
     });
-
-    // ==========================
-    // Ajax用 Element登録
-    // ==========================
-    Route::post('/elements/store', [ElementController::class, 'store'])->name('elements.store');
-
-    // ==========================
-    // 登録済み Element一覧
-    // ==========================
-    Route::get('/elements', [ElementController::class, 'index'])->name('elements.index');
 });

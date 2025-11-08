@@ -26,6 +26,9 @@ document.addEventListener("DOMContentLoaded", () => {
         setTimeout(() => (button.textContent = "📋 コピー"), 1500);
     };
 
+    // preview で作った値を register でも使うために上位スコープに置く
+    let Table, Model, Controller, DB, Repo;
+
     // プレビュー表示
     previewBtn.addEventListener("click", () => {
         const keyword = document.getElementById("keyword").value.trim();
@@ -40,15 +43,18 @@ document.addEventListener("DOMContentLoaded", () => {
             return;
         }
 
-        const Table = pluralize(keyword);
-        const Model = keyword.charAt(0).toUpperCase() + keyword.slice(1);
-        const Controller = Model + "Controller";
-        const DB = keyword.toLowerCase() + "_db";
-        const Repo = keyword.toLowerCase() + "-app";
+        // 変数をここでセット（registerでも使える）
+        Table = pluralize(keyword);
+        Model = keyword.charAt(0).toUpperCase() + keyword.slice(1);
+        Controller = Model + "Controller";
+        DB = keyword.toLowerCase() + "_db";
+        Repo = projectName.toLowerCase() + "-app"; // 修正: プロジェクト名ベースに変更
 
         const tableHTML = `
             <table class="table table-bordered table-striped mt-3">
-                <thead><tr><th>項目</th><th>生成結果</th></tr></thead>
+                <thead>
+                    <tr><th>項目</th><th>生成結果</th></tr>
+                </thead>
                 <tbody>
                     <tr><td>プロジェクト名</td><td>${projectName}</td></tr>
                     <tr><td>GitHubリポジトリ名</td><td>${Repo}</td></tr>
@@ -89,54 +95,56 @@ document.addEventListener("DOMContentLoaded", () => {
                 keyword,
                 env,
                 laravel_version: laravelVersion,
+                table_name: Table,
+                model_name: Model,
+                controller_name: Controller,
+                db_name: DB,
+                repo_name: Repo,
             }),
         })
             .then((res) => res.json())
             .then((data) => {
                 const messageDiv =
                     document.getElementById("generation-message");
+
                 if (data.success) {
                     messageDiv.textContent = "要素名を登録しました。";
                     messageDiv.style.display = "block";
 
-                    // 手順カードを生成
-const container = document.getElementById("generation-steps");
-container.innerHTML = "";
+                    // 手順カード生成
+                    const container =
+                        document.getElementById("generation-steps");
+                    container.innerHTML = "";
 
-data.steps.forEach((step, index) => {
-    const div = document.createElement("div");
-    div.classList.add("step-card", "p-3", "border", "rounded", "bg-light");
+                    data.steps.forEach((step, index) => {
+                        const div = document.createElement("div");
+                        div.classList.add(
+                            "step-card",
+                            "p-3",
+                            "border",
+                            "rounded",
+                            "bg-light"
+                        );
 
-    // カードの中身
-    div.innerHTML = `
-        <h5 class="fw-bold">${step.title}</h5>
-        <p>${step.description}</p>
-        ${
-            step.command
-                ? `
-            <div class="code-container" style="margin-bottom: 0;">
-                <div class="code-header">
-                    💾 コード
-                    <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
-                </div>
-                <pre class="code-block" style="margin-bottom: 0;"><code>${step.command}</code></pre>
-            </div>
-        `
-                : ""
-        }
-    `;
-
-    // カード間の余白を20pxに設定
-    div.style.marginBottom = "20px";
-
-    // 最後のカードだけは余白なし
-    if (index === data.steps.length - 1) {
-        div.style.marginBottom = "0";
-    }
-
-    container.appendChild(div);
-});
-
+                        div.innerHTML = `
+                        <h5 class="fw-bold">${step.title}</h5>
+                        <p>${step.description}</p>
+                        ${
+                            step.command
+                                ? `<div class="code-container" style="margin-bottom: 0;">
+                                        <div class="code-header">
+                                            💾 コード
+                                            <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+                                        </div>
+                                        <pre class="code-block" style="margin-bottom: 0;"><code>${step.command}</code></pre>
+                                    </div>`
+                                : ""
+                        }
+                    `;
+                        div.style.marginBottom =
+                            index === data.steps.length - 1 ? "0" : "20px";
+                        container.appendChild(div);
+                    });
 
                     document.getElementById(
                         "generation-steps-area"
@@ -153,6 +161,7 @@ data.steps.forEach((step, index) => {
         document.getElementById("keyword").value = "";
         document.getElementById("env-select").value = "";
         document.getElementById("laravel-version").value = "";
+        document.getElementById("element-project-name").value = "";
         document.getElementById("generation-result").style.display = "none";
         registerBtn.style.display = "none";
         clearBtn.style.display = "none";

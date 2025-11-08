@@ -13,10 +13,22 @@ return new class extends Migration
     {
         Schema::create('elements', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('project_id')->constrained()->onDelete('cascade');
-            $table->string('keyword');
-            $table->string('env');
-            $table->string('laravel_version');
+
+            // 🔗 projectsテーブルとのリレーション
+            $table->foreignId('project_id')
+                  ->constrained()
+                  ->onDelete('cascade');
+
+            // 🧩 JSで生成した要素を保存
+            $table->string('keyword', 255);
+            $table->string('env', 50);
+            $table->string('laravel_version', 50);
+            $table->string('table_name', 255);
+            $table->string('model_name', 255);
+            $table->string('controller_name', 255);
+            $table->string('db_name', 255);
+            $table->string('repo_name', 255);
+
             $table->timestamps();
         });
     }

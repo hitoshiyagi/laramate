@@ -8,15 +8,17 @@ use Illuminate\Support\Facades\Auth;
 
 class ProjectController extends Controller
 {
-    // プロジェクト名を入力
+    // プロジェクト作成
     public function store(Request $request)
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255'
         ]);
 
+        // 🔹 ログイン中のユーザー情報を付けて保存
         $project = Project::create([
-            'name' => $validated['name']
+            'name' => $validated['name'],
+            'user_id' => Auth::id(), // ← ここを追加
         ]);
 
         return response()->json([
@@ -25,23 +27,32 @@ class ProjectController extends Controller
         ]);
     }
 
+    // 作成画面
     public function create()
     {
-        return view('projects.index'); // ← プロジェクト作成画面のView
+        return view('projects.index'); // プロジェクト作成画面
     }
 
+    // プロジェクト一覧
+    public function list()
+    {
+        $user = auth()->user();
+        $projects = $user->projects()->latest()->get();
 
-    // 詳細ページ一覧表示
+        return view('projects.list', compact('projects'));
+    }
+
+    // 一覧（旧index）
     public function index()
     {
-        // ログインユーザーのプロジェクト一覧を取得
         $projects = Project::where('user_id', Auth::id())->get();
-
         return view('projects.index', compact('projects'));
     }
+
+    // 詳細表示
     public function show(Project $project)
     {
-        $elements = $project->elements; // 紐づく要素を取得
-        return view('projects.show', compact('project', 'elements'));
+        $project->load('elements'); // 要素もロード
+        return view('projects.show', compact('project'));
     }
 }

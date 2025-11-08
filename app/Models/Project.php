@@ -11,7 +11,8 @@ class Project extends Model
 
     // 一括代入を許可するカラムを指定
     protected $fillable = [
-        'name'
+        'name',
+        'user_id',
     ];
 
     // 🔸 一つのプロジェクトは複数の要素群（elements）を持つ
@@ -19,4 +20,10 @@ class Project extends Model
     {
         return $this->hasMany(Element::class);
     }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
 }
