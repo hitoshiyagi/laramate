@@ -26,11 +26,13 @@
     </div>
 
     {{-- 要素群一覧 --}}
-    <h4 class="mb-3">要素一覧</h4>
-
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h4 class="mb-0">要素一覧</h4>
+        <a href="{{ route('elements.create', $project->id) }}" class="btn btn btn-outline-secondary">＋ 要素を追加（準備中）</a>
+    </div>
     @if($project->elements->isEmpty())
     <p>まだ要素が登録されていません。</p>
-    <a href="{{ route('elements.create', $project->id) }}" class="btn btn-primary">＋ 要素を追加</a>
+    <a href="{{ route('elements.create', $project->id) }}" class="btn btn btn-outline-secondary">＋ 要素を追加（準備中）</a>
     @else
     <div class="row">
         @foreach($project->elements as $element)
@@ -38,17 +40,33 @@
             <div class="card shadow-sm h-100 hover-scale">
                 <div class="card-body d-flex flex-column">
                     <h5 class="fw-bold text-primary">{{ $element->keyword }}</h5>
-                    <p class="mb-1"><strong>環境:</strong> {{ $element->env }}</p>
-                    <p class="mb-1"><strong>Laravelバージョン:</strong> {{ $element->laravel_version }}</p>
-                    <p class="mb-1"><strong>テーブル名:</strong> {{ $element->table_name }}</p>
-                    <p class="mb-1"><strong>モデル名:</strong> {{ $element->model_name }}</p>
-                    <p class="mb-1"><strong>コントローラ名:</strong> {{ $element->controller_name }}</p>
-                    <p class="mb-1"><strong>DB名:</strong> {{ $element->db_name }}</p>
-                    <p class="mb-1"><strong>リポジトリ名:</strong> {{ $element->repo_name }}</p>
+                    @php
+                    $fields = [
+                    '環境' => $element->env,
+                    'Laravelバージョン' => $element->laravel_version,
+                    'テーブル名' => $element->table_name,
+                    'モデル名' => $element->model_name,
+                    'コントローラ名' => $element->controller_name,
+                    'DB名' => $element->db_name,
+                    'リポジトリ名' => $element->repo_name,
+                    '作成日' => $element->created_at->format('Y/m/d'),
+                    ];
+                    @endphp
 
-                    {{-- 将来的に編集ボタンを追加可能 --}}
-                    <div class="mt-auto">
-                        <a href="#" class="btn btn-outline-secondary w-100 disabled">編集（準備中）</a>
+                    <table class="table table-bordered table-sm">
+                        <tbody>
+                            @foreach($fields as $label => $value)
+                            <tr>
+                                <th class="text-nowrap">{{ $label }}</th>
+                                <td>{{ $value }}</td>
+                            </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                    {{-- 将来的に編集・削除ボタンを横並びに --}}
+                    <div class="mt-auto d-flex justify-content-between">
+                        <a href="#" class="btn btn-outline-secondary flex-fill mr-2 disabled">編集（準備中）</a>
+                        <a href="#" class="btn btn-outline-secondary flex-fill  disabled">削除（準備中）</a>
                     </div>
                 </div>
             </div>

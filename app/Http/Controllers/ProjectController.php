@@ -52,7 +52,7 @@ class ProjectController extends Controller
     // 詳細表示
     public function show(Project $project)
     {
-        $project->load('elements'); // 要素もロード
+        $project->load('elements');
         return view('projects.show', compact('project'));
     }
 }
