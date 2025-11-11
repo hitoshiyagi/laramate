@@ -12,20 +12,21 @@ class ProjectController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'name' => 'required|string|max:255'
+            'name' => 'required|string|max:255',
         ]);
 
-        // 🔹 ログイン中のユーザー情報を付けて保存
         $project = Project::create([
             'name' => $validated['name'],
-            'user_id' => Auth::id(), // ← ここを追加
+            'repo' => $validated['name'], // ← 自動で同じ名前を設定
+            'user_id' => Auth::id(),
         ]);
 
         return response()->json([
             'success' => true,
-            'project' => $project
+            'project' => $project,
         ]);
     }
+
 
     // 作成画面
     public function create()

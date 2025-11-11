@@ -1,4 +1,3 @@
-
 document.addEventListener("DOMContentLoaded", () => {
     const btn = document.getElementById("create-project-btn");
     const csrfToken = document
@@ -15,13 +14,17 @@ document.addEventListener("DOMContentLoaded", () => {
                 return;
             }
 
+            // name と repo に同じ値を送る
             fetch("/projects/store", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                     "X-CSRF-TOKEN": csrfToken,
                 },
-                body: JSON.stringify({ name }),
+                body: JSON.stringify({
+                    name: name,
+                    repo: name, // ← 追加（同じ値を送信）
+                }),
             })
                 .then((res) => res.json())
                 .then((data) => {
