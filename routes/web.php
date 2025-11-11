@@ -21,13 +21,14 @@ Route::get('/', [HomeController::class, 'index'])
 Auth::routes();
 
 // ==========================
-// ログイン必須のルート
+// ログイン必須ルート
 // ==========================
 Route::middleware(['auth'])->group(function () {
 
-    // HomeController は必要なら残す
-    Route::get('/home', [HomeController::class, 'index'])->name('home');
-
+    // /home にアクセスした場合も / に統一
+    Route::get('/home', function () {
+        return redirect('/');
+    });
     // ==========================
     // Project関連
     // ==========================

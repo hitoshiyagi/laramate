@@ -37,6 +37,10 @@ document.addEventListener("DOMContentLoaded", () => {
                         document.getElementById("element-project-name").value =
                             data.project.name;
 
+                        // リポジトリ名を反映
+                        document.getElementById("element-project-repo").value =
+                            data.project.repo;
+
                         // プロジェクト作成カードを非表示
                         document.getElementById("project-card").style.display =
                             "none";

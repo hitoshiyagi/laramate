@@ -43,8 +43,7 @@
                     'テーブル名' => $element->table_name,
                     'モデル名' => $element->model_name,
                     'コントローラ名' => $element->controller_name,
-                    'DB名' => $element->db_name,
-                    'リポジトリ名' => $element->repo_name,
+                    'データベース名' => $element->db_name,
                     '作成日' => $element->created_at->format('Y/m/d'),
                     ];
                     @endphp

@@ -18,7 +18,6 @@ class Element extends Model
         'model_name',
         'controller_name',
         'db_name',
-        'repo_name',
     ];
 
     // 🔸 要素群は1つのプロジェクトに属する

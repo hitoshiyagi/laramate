@@ -54,7 +54,7 @@ function generate() {
           <tbody>
             <tr><td>プロジェクト名</td><td>${Repo}</td></tr>
             <tr><td>GitHubリポジトリ名</td><td>${Repo}</td></tr>
-            <tr><td>DB名</td><td>${DB}</td></tr>
+            <tr><td>データベース名</td><td>${DB}</td></tr>
             <tr><td>モデル名</td><td>${Model}</td></tr>
             <tr><td>テーブル名</td><td>${Table}</td></tr>
             <tr><td>コントローラ名</td><td>${Controller}</td></tr>

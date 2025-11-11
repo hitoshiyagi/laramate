@@ -27,28 +27,33 @@ document.addEventListener("DOMContentLoaded", () => {
     };
 
     // preview で作った値を register でも使うために上位スコープに置く
-    let Table, Model, Controller, DB, Repo;
+    let Table, Model, Controller, DB;
+
+    const projectNameInput = document.getElementById("element-project-name");
+    const repoNameInput = document.getElementById("element-project-repo");
+
+    // リポジトリ名はプロジェクト名と同じにしてリードオンリーで表示
+    repoNameInput.readOnly = true;
+    if (projectNameInput.value) {
+        repoNameInput.value = projectNameInput.value;
+    }
 
     // プレビュー表示
     previewBtn.addEventListener("click", () => {
         const keyword = document.getElementById("keyword").value.trim();
         const env = document.getElementById("env-select").value;
         const laravelVersion = document.getElementById("laravel-version").value;
-        const projectName = document.getElementById(
-            "element-project-name"
-        ).value;
+        const projectName = projectNameInput.value.trim();
 
         if (!keyword || !env || !laravelVersion) {
             alert("キーワード・環境・Laravelバージョンを選択してください");
             return;
         }
 
-        // 変数をここでセット（registerでも使える）
         Table = pluralize(keyword);
         Model = keyword.charAt(0).toUpperCase() + keyword.slice(1);
         Controller = Model + "Controller";
         DB = keyword.toLowerCase() + "_db";
-        Repo = projectName.toLowerCase() + "-app"; // 修正: プロジェクト名ベースに変更
 
         const tableHTML = `
             <table class="table table-bordered table-striped mt-3">
@@ -57,8 +62,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 </thead>
                 <tbody>
                     <tr><td>プロジェクト名</td><td>${projectName}</td></tr>
-                    <tr><td>GitHubリポジトリ名</td><td>${Repo}</td></tr>
-                    <tr><td>DB名</td><td>${DB}</td></tr>
+                    <tr><td>GitHubリポジトリ名</td><td>${projectName}</td></tr>
+                    <tr><td>データベース名</td><td>${DB}</td></tr>
                     <tr><td>モデル名</td><td>${Model}</td></tr>
                     <tr><td>テーブル名</td><td>${Table}</td></tr>
                     <tr><td>コントローラ名</td><td>${Controller}</td></tr>
@@ -78,9 +83,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const keyword = document.getElementById("keyword").value.trim();
         const env = document.getElementById("env-select").value;
         const laravelVersion = document.getElementById("laravel-version").value;
-        const projectName = document.getElementById(
-            "element-project-name"
-        ).value;
+        const projectName = projectNameInput.value;
 
         fetch("/elements/store", {
             method: "POST",
@@ -99,19 +102,16 @@ document.addEventListener("DOMContentLoaded", () => {
                 model_name: Model,
                 controller_name: Controller,
                 db_name: DB,
-                repo_name: Repo,
             }),
         })
             .then((res) => res.json())
             .then((data) => {
                 const messageDiv =
                     document.getElementById("generation-message");
-
                 if (data.success) {
                     messageDiv.textContent = "要素名を登録しました。";
                     messageDiv.style.display = "block";
 
-                    // 手順カード生成
                     const container =
                         document.getElementById("generation-steps");
                     container.innerHTML = "";
@@ -125,19 +125,18 @@ document.addEventListener("DOMContentLoaded", () => {
                             "rounded",
                             "bg-light"
                         );
-
                         div.innerHTML = `
                         <h5 class="fw-bold">${step.title}</h5>
                         <p>${step.description}</p>
                         ${
                             step.command
                                 ? `<div class="code-container" style="margin-bottom: 0;">
-                                        <div class="code-header">
-                                            💾 コード
-                                            <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
-                                        </div>
-                                        <pre class="code-block" style="margin-bottom: 0;"><code>${step.command}</code></pre>
-                                    </div>`
+                            <div class="code-header">
+                                💾 コード
+                                <button class="copy-btn" onclick="copyCode(this)">📋 コピー</button>
+                            </div>
+                            <pre class="code-block" style="margin-bottom: 0;"><code>${step.command}</code></pre>
+                        </div>`
                                 : ""
                         }
                     `;
@@ -161,7 +160,8 @@ document.addEventListener("DOMContentLoaded", () => {
         document.getElementById("keyword").value = "";
         document.getElementById("env-select").value = "";
         document.getElementById("laravel-version").value = "";
-        document.getElementById("element-project-name").value = "";
+        projectNameInput.value = "";
+        repoNameInput.value = "";
         document.getElementById("generation-result").style.display = "none";
         registerBtn.style.display = "none";
         clearBtn.style.display = "none";

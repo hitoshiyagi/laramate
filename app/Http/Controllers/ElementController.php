@@ -23,7 +23,6 @@ class ElementController extends Controller
             'model_name'        => 'required|string|max:255',
             'controller_name'   => 'required|string|max:255',
             'db_name'           => 'required|string|max:255',
-            'repo_name'         => 'required|string|max:255',
         ]);
 
         // プロジェクト取得または作成
@@ -42,7 +41,6 @@ class ElementController extends Controller
             'model_name'        => $validated['model_name'],
             'controller_name'   => $validated['controller_name'],
             'db_name'           => $validated['db_name'],
-            'repo_name'         => $validated['repo_name'],
         ]);
 
         // 登録後の手順例
