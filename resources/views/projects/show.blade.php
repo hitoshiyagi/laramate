@@ -11,14 +11,10 @@
 
     {{-- プロジェクト情報 --}}
     <div class="mb-4 p-3 border rounded shadow-sm bg-light">
-        <h3 class="mb-2">{{ $project->name }}</h3>
+        <h3 class="mb-2">プロジェクト名: {{ $project->name }}</h3>
         <p class="mb-0">
-            リポジトリ:
-            @if($project->repo_name)
-            <a href="{{ $project->repo_name }}" target="_blank">{{ $project->repo_name }}</a>
-            @else
-            未設定
-            @endif
+            GitHubリポジトリ:
+            {{ $project->repo ?? '未設定' }}
         </p>
         <p class="mb-0 text-muted">
             作成日: {{ $project->created_at->format('Y/m/d') }}
