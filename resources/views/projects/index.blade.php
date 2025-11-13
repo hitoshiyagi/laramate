@@ -24,6 +24,7 @@
                     <label for="name" class="col-md-4 col-form-label text-md-end">プロジェクト名</label>
                     <div class="col-md-6">
                         <input type="text" name="name" id="name" class="form-control" placeholder="例：laramate" required>
+                        <div id="project-error" class="text-danger mt-1"></div>
                     </div>
                 </div>
 

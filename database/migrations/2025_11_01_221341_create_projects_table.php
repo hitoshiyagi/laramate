@@ -13,10 +13,10 @@ return new class extends Migration
     {
         Schema::create('projects', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('user_id')->nullable(); // 追加
+            $table->unsignedBigInteger('user_id')->nullable(); // ユーザーID
             $table->string('name');                // プロジェクト名
             $table->string('repo')->nullable();    // リポジトリ名
-            $table->text('description')->nullable(); // 概要
+            $table->unique(['user_id', 'name']);  //重複チェク
             $table->timestamps();                  // created_at / updated_at
         });
     }
