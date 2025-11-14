@@ -60,6 +60,14 @@ Route::middleware(['auth'])->group(function () {
     // ==========================
     Route::get('/elements', [ElementController::class, 'index'])->name('elements.index');
 
+
+    // ==========================
+    // 子要素削除
+    // ==========================
+    Route::delete('/elements/{element}', [ElementController::class, 'destroy'])
+        ->name('elements.destroy');
+
+
     // ==========================
     // Item関連
     // ==========================

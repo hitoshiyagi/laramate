@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use App\Models\Element;
 use App\Models\Project;
 
@@ -91,4 +92,33 @@ class ElementController extends Controller
             'elements' => $elements,
         ]);
     }
+    // 子要素の削除
+    public function destroy(Element $element)
+    {
+        // 関連プロジェクトが存在するか確認
+        $project = $element->project;
+        if (!$project) {
+            return response()->json([
+                'success' => false,
+                'message' => '関連プロジェクトが見つかりません'
+            ], 404);
+        }
+
+        // 権限チェック
+        if ($project->user_id !== Auth::id()) {
+            return response()->json([
+                'success' => false,
+                'message' => '権限がありません'
+            ], 403);
+        }
+
+        // 削除
+        $element->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => '子要素を削除しました'
+        ]);
+    }
+
 }

@@ -32,7 +32,7 @@
     @else
     <div class="row">
         @foreach($project->elements as $element)
-        <div class="col-md-6 mb-4">
+        <div class="col-md-6 mb-4" id="element-{{ $element->id }}">
             <div class="card shadow-sm h-100 hover-scale">
                 <div class="card-body d-flex flex-column">
                     <h5 class="fw-bold text-primary">{{ $element->keyword }}</h5>
@@ -58,11 +58,16 @@
                             @endforeach
                         </tbody>
                     </table>
-                    {{-- 将来的に編集・削除ボタンを横並びに --}}
-                    <div class="mt-auto d-flex justify-content-between">
-                        <a href="#" class="btn btn-outline-secondary flex-fill mr-2 disabled">編集（準備中）</a>
-                        <a href="#" class="btn btn-outline-secondary flex-fill  disabled">削除（準備中）</a>
+                    {{-- 将来的に編集ボタンを横並びに --}}
+                    <div class="mt-auto d-flex flex-column flex-md-row">
+                        <a href="#" class="btn btn-outline-secondary flex-fill mb-2 mb-md-0 mr-md-2 disabled">編集</a>
+
+                        <button class="btn btn-outline-danger flex-fill delete-element"
+                            data-id="{{ $element->id }}">
+                            削除
+                        </button>
                     </div>
+
                 </div>
             </div>
         </div>
@@ -84,4 +89,9 @@
         box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
     }
 </style>
+@stop
+@section('js')
+<script src="{{ asset('js/common.js') }}"></script>
+<script src="{{ asset('js/project.js') }}"></script>
+<script src="{{ asset('js/element.js') }}"></script>
 @stop
