@@ -203,38 +203,39 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // 子要素の削除
-    document.querySelectorAll(".delete-element").forEach((btn) => {
-        btn.addEventListener("click", () => {
-            const elementId = btn.dataset.id;
-            const csrfToken = document
-                .querySelector('meta[name="csrf-token"]')
-                .getAttribute("content");
+    document.addEventListener("click", function (e) {
+        // 削除ボタン（テキスト or アイコン）の判定
+        if (
+            e.target.classList.contains("delete-element") ||
+            e.target.classList.contains("delete-element-icon")
+        ) {
+            const elementId = e.target.getAttribute("data-id");
+            if (!elementId) return;
 
             if (!confirm("本当に削除しますか？")) return;
 
             fetch(`/elements/${elementId}`, {
                 method: "DELETE",
                 headers: {
-                    "X-CSRF-TOKEN": csrfToken,
+                    "X-CSRF-TOKEN": document.querySelector(
+                        'meta[name="csrf-token"]'
+                    ).content,
                     "Content-Type": "application/json",
                 },
             })
-                .then((res) => {
-                    if (!res.ok)
-                        throw new Error(`サーバーエラー: ${res.status}`);
-                    return res.json();
-                })
+                .then((res) => res.json())
                 .then((data) => {
                     if (data.success) {
-                        const elementDiv = document.getElementById(
+                        // DOMから削除
+                        const targetCard = document.getElementById(
                             `element-${elementId}`
                         );
-                        if (elementDiv) elementDiv.remove();
+                        if (targetCard) targetCard.remove();
                     } else {
-                        alert(data.message || "削除できませんでした");
+                        alert(data.message || "削除に失敗しました");
                     }
                 })
-                .catch((err) => alert(err.message));
-        });
+                .catch(() => alert("通信エラーが発生しました"));
+        }
     });
 });

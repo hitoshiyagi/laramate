@@ -17,17 +17,21 @@
     @else
     <div class="row">
         @foreach($projects as $project)
-        <div class="col-md-4 mb-4">
+        <div class="col-md-4 mb-4" id="project-{{ $project->id }}">
             <div class="card shadow-sm border-0 h-100 hover-scale">
                 <div class="card-body d-flex flex-column">
-                    <h5 class="fw-bold text-primary mb-2">{{ $project->name }}</h5>
-                    <p class="text-muted small mb-3">
-                        作成日: {{ $project->created_at->format('Y/m/d') }}
-                    </p>
-
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <h5 class="fw-bold text-primary mb-0">{{ $project->name }}</h5>
+                        <button class="delete-project btn p-1 border-0 bg-transparent text-danger"
+                            data-id="{{ $project->id }}"
+                            title="プロジェクトを削除"
+                            style="font-size: 1rem;">
+                            🗑️
+                        </button>
+                    </div>
+                    <p class="text-muted small mb-3">作成日: {{ $project->created_at->format('Y/m/d') }}</p>
                     <div class="mt-auto">
-                        <a href="{{ route('projects.show', $project->id) }}"
-                            class="btn btn-outline-primary w-100">
+                        <a href="{{ route('projects.show', $project->id) }}" class="btn btn-outline-primary w-100">
                             要素一覧を見る
                         </a>
                     </div>
