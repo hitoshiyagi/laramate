@@ -26,7 +26,6 @@ return new class extends Migration
             $table->string('table_name', 255);
             $table->string('model_name', 255);
             $table->string('controller_name', 255);
-            $table->string('db_name', 255);
             $table->timestamps();
         });
     }

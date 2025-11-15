@@ -19,6 +19,10 @@
             GitHubリポジトリ: {{ $project->repo ?? '未設定' }}
         </p>
 
+        <p class="mb-0">
+            データベース名: {{ $project->database_name ?? '未設定' }}
+        </p>
+
         <div class="d-flex align-items-center justify-content-between">
             <p class="mb-0 text-muted">
                 作成日: {{ $project->created_at->format('Y/m/d') }}
@@ -62,7 +66,6 @@
                     $fields = [
                     '環境' => $element->env,
                     'Laravelバージョン' => $element->laravel_version,
-                    'データベース名' => $element->db_name,
                     'テーブル名' => $element->table_name,
                     'モデル名' => $element->model_name,
                     'コントローラ名' => $element->controller_name,
@@ -105,7 +108,6 @@
 @stop
 
 @section('js')
-<script src="{{ asset('js/common.js') }}"></script>
 <script src="{{ asset('js/project.js') }}"></script>
 <script src="{{ asset('js/element.js') }}"></script>
 @stop

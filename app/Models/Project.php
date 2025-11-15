@@ -9,10 +9,8 @@ class Project extends Model
 {
     use HasFactory;
 
-    // 一括代入を許可するカラムを指定
-    protected $fillable = ['name', 'repo', 'user_id'];
+    protected $fillable = ['name', 'repo', 'database_name', 'user_id'];
 
-    // 🔸 一つのプロジェクトは複数の要素群（elements）を持つ
     public function elements()
     {
         return $this->hasMany(Element::class);

@@ -9,17 +9,13 @@ use App\Models\Project;
 
 class ElementController extends Controller
 {
-    /**
-     * 要素一覧
-     * GET /elements
-     */
     public function index()
     {
         $userId = Auth::id();
 
-        $elements = Element::whereHas('project', function ($q) use ($userId) {
-            $q->where('user_id', $userId);
-        })->orderBy('created_at', 'desc')->get();
+        $elements = Element::whereHas('project', fn($q) => $q->where('user_id', $userId))
+            ->orderBy('created_at', 'desc')
+            ->get();
 
         return response()->json([
             'success' => true,
@@ -27,13 +23,8 @@ class ElementController extends Controller
         ]);
     }
 
-    /**
-     * 要素登録
-     * POST /elements
-     */
     public function store(Request $request)
     {
-        // 🔹 バリデーション
         $validated = $request->validate([
             'project_name'    => ['required', 'string', 'max:255', 'regex:/^[a-zA-Z0-9]+$/'],
             'keyword'         => ['required', 'string', 'max:255', 'regex:/^[a-zA-Z0-9]+$/'],
@@ -42,17 +33,16 @@ class ElementController extends Controller
             'table_name'      => ['required', 'string', 'max:255', 'regex:/^[a-zA-Z0-9_]+$/'],
             'model_name'      => ['required', 'string', 'max:255', 'regex:/^[a-zA-Z0-9]+$/'],
             'controller_name' => ['required', 'string', 'max:255', 'regex:/^[a-zA-Z0-9]+$/'],
-            'db_name'         => ['required', 'string', 'max:255', 'regex:/^[a-zA-Z0-9_]+$/'],
+            'database_name'   => ['required', 'string', 'max:255', 'regex:/^[a-zA-Z0-9_]+$/'],
         ]);
 
         $userId = Auth::id();
 
-        // 🔹 プロジェクトを取得 or 作成
         $project = Project::firstOrCreate(
-            ['name' => $validated['project_name'], 'user_id' => $userId]
+            ['name' => $validated['project_name'], 'user_id' => $userId],
+            ['database_name' => $validated['database_name']]
         );
 
-        // 🔹 要素作成
         $element = Element::create([
             'project_id'      => $project->id,
             'keyword'         => $validated['keyword'],
@@ -61,10 +51,9 @@ class ElementController extends Controller
             'table_name'      => $validated['table_name'],
             'model_name'      => $validated['model_name'],
             'controller_name' => $validated['controller_name'],
-            'db_name'         => $validated['db_name'],
+            'database_name'   => $validated['database_name'],
         ]);
 
-        // 🔹 生成手順
         $steps = [
             [
                 'title' => 'ステップ①：作業フォルダに移動',
@@ -100,13 +89,8 @@ class ElementController extends Controller
         ]);
     }
 
-    /**
-     * 要素削除
-     * DELETE /elements/{element}
-     */
     public function destroy(Element $element)
     {
-        // 🔹 権限チェック
         if ($element->project->user_id !== Auth::id()) {
             return response()->json([
                 'success' => false,

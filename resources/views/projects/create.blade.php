@@ -16,22 +16,19 @@
         <div class="card mt-4" id="project-card">
             <div class="card-header">プロジェクト作成</div>
             <div class="card-body">
-                <p>プロジェクト名を入力し、新規プロジェクトを作成します。</p>
+                <div id="project-error" class="text-danger mb-2"></div>
+
                 <div class="row mb-3">
                     <label for="name" class="col-md-4 col-form-label text-md-end">プロジェクト名</label>
                     <div class="col-md-6">
-                        <input type="text" name="name" id="project-name" class="form-control"
-                            placeholder="例：laramate" required pattern="^[a-zA-Z0-9]+$"
-                            title="半角英数字のみ入力可能です">
+                        <input type="text" id="name" class="form-control" placeholder="例：laramate">
                         <small class="form-text text-muted">半角英数字のみで入力してください（例：laramate）</small>
-                        <div id="project-error" class="text-danger mt-1"></div>
                     </div>
                 </div>
-                <div class="row mb-0">
+
+                <div class="row mb-3">
                     <div class="col-md-6 offset-md-4">
-                        <button type="button" class="btn btn-primary" id="create-project-btn">
-                            要素名の生成へ進む
-                        </button>
+                        <button type="button" id="create-project-btn" class="btn btn-primary">プロジェクトを作成</button>
                     </div>
                 </div>
             </div>
@@ -42,6 +39,7 @@
             <div class="card-header">要素名生成</div>
             <div class="card-body">
                 <form id="element-form">
+
                     <div class="row mb-3">
                         <label class="col-md-4 col-form-label text-md-end">プロジェクト名</label>
                         <div class="col-md-6">
@@ -53,6 +51,13 @@
                         <label class="col-md-4 col-form-label text-md-end">リポジトリ名</label>
                         <div class="col-md-6">
                             <input type="text" id="element-project-repo" class="form-control" readonly>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <label class="col-md-4 col-form-label text-md-end">データベース名</label>
+                        <div class="col-md-6">
+                            <input type="text" id="element-project-db" class="form-control" readonly>
                         </div>
                     </div>
 
@@ -95,72 +100,150 @@
                         </div>
                     </div>
                 </form>
+            </div>
+        </div>
 
-                {{-- プレビュー --}}
-                <div id="generation-result" class="mt-4" style="display:none;">
-                    <div id="result-table" class="bg-light p-3 rounded"></div>
+        {{-- プレビュー --}}
+        <div id="generation-result" class="mt-4" style="display:none;">
+            <div id="result-table" class="bg-light p-3 rounded"></div>
 
-                    <div class="mt-3 col-md-6 offset-md-4">
-                        <button class="btn btn-primary" id="register-elements">登録する</button>
-                        <button class="btn btn-secondary" id="clear-elements">クリア</button>
-                        <div id="generation-message" class="mt-2 text-success" style="display:none;"></div>
-                    </div>
+            <div class="mt-3 col-md-6 offset-md-4">
+                <button class="btn btn-primary" id="register-elements">登録する</button>
+                <button class="btn btn-secondary" id="clear-elements">クリア</button>
+                <div id="generation-message" class="mt-2 text-success" style="display:none;"></div>
+            </div>
 
-                    {{-- 登録後手順 --}}
-                    <div id="generation-steps-area" style="display:none;" class="mt-4">
-                        <h5>登録後の手順</h5>
-                        <div id="generation-steps" class="d-flex flex-column mb-4"></div>
-                    </div>
-                </div>
+            {{-- 登録後手順 --}}
+            <div id="generation-steps-area" style="display:none;" class="mt-4">
+                <h5>登録後の手順</h5>
+                <div id="generation-steps" class="d-flex flex-column mb-4"></div>
             </div>
         </div>
     </div>
 </div>
-
 @stop
 
 @section('css')
 <style>
-    /* 手順カード */
+    /* カード全体のマージン調整 */
+    .card {
+        margin-bottom: 20px;
+    }
+
+    /* プレビューのテーブル */
+    #result-table table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    #result-table th,
+    #result-table td {
+        border: 1px solid #dee2e6;
+        padding: 8px;
+        text-align: left;
+    }
+
+    #result-table th {
+        background-color: #f8f9fa;
+    }
+
+    /* ステップカード */
     .step-card {
-        margin-bottom: 15px;
-    }
-
-    .code-block {
-        background: #2d2d2d;
-        color: #f8f8f2;
+        background-color: #f8f9fa;
+        border: 1px solid #dee2e6;
+        border-radius: 5px;
         padding: 15px;
-        font-family: "Fira Code", monospace;
-        overflow-x: auto;
-        border-radius: 0 0 4px 4px;
-        margin-bottom: 0 !important;
+        margin-bottom: 10px;
+        position: relative;
     }
 
+    /* コードブロック */
+    .code-block {
+        background-color: #272822;
+        color: #f8f8f2;
+        padding: 10px;
+        border-radius: 4px;
+        font-family: 'Courier New', Courier, monospace;
+        overflow-x: auto;
+        white-space: pre-wrap;
+        word-break: break-all;
+        margin-top: 5px;
+    }
+
+    /* コードヘッダーとコピーボタン */
     .code-header {
         display: flex;
         justify-content: flex-end;
-        align-items: center;
-        background: #444;
-        padding: 4px 8px;
-        border-radius: 4px 4px 0 0;
-        font-size: 0.85rem;
-        color: #fff;
+        margin-bottom: 5px;
     }
 
-    .code-header .copy-btn {
-        background: #555;
-        /* 初期ボタン色 */
-        color: #fff;
+    .copy-btn {
+        background-color: #6c757d;
         border: none;
-        padding: 3px 6px;
+        color: #fff;
+        padding: 4px 8px;
         border-radius: 4px;
         cursor: pointer;
-        font-size: 0.8rem;
-        transition: background 0.2s;
+        font-size: 0.9rem;
+        display: flex;
+        align-items: center;
+        gap: 5px;
     }
 
-    .code-header .copy-btn:hover {
-        background: #0d6efd;
+    .copy-btn:hover {
+        background-color: #5a6268;
+    }
+
+    /* コピー完了時に色を変える */
+    .copy-btn.copied {
+        background-color: #28a745 !important;
+    }
+
+    /* 全体の余白 */
+    #generation-result {
+        margin-top: 20px;
+    }
+
+    /* ボタン間隔 */
+    #register-elements,
+    #clear-elements {
+        margin-right: 10px;
+    }
+
+    /* ====== レスポンシブ対応 ====== */
+    @media (max-width: 768px) {
+
+        #result-table table,
+        #result-table th,
+        #result-table td {
+            font-size: 0.9rem;
+        }
+
+        .step-card {
+            padding: 10px;
+        }
+
+        .copy-btn {
+            padding: 3px 6px;
+            font-size: 0.8rem;
+        }
+
+        #element-card .row.mb-3,
+        #project-card .row.mb-3 {
+            flex-direction: column;
+        }
+
+        #element-card .col-md-6,
+        #project-card .col-md-6 {
+            width: 100%;
+            margin-top: 5px;
+        }
+
+        #element-card .col-md-6.offset-md-4,
+        #project-card .col-md-6.offset-md-4 {
+            margin-left: 0;
+        }
+    }
 </style>
 @stop
 
