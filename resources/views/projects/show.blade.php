@@ -11,17 +11,14 @@
 
     {{-- プロジェクト情報 --}}
     <div class="mb-4 p-3 border rounded shadow-sm bg-light">
-
         <div class="d-flex align-items-center justify-content-between mb-2">
             <h3 class="mb-0">{{ $project->name }}</h3>
         </div>
 
         <p class="mb-0">
-            GitHubリポジトリ:
-            {{ $project->repo ?? '未設定' }}
+            GitHubリポジトリ: {{ $project->repo ?? '未設定' }}
         </p>
 
-        <!-- 作成日とゴミ箱を横並びに -->
         <div class="d-flex align-items-center justify-content-between">
             <p class="mb-0 text-muted">
                 作成日: {{ $project->created_at->format('Y/m/d') }}
@@ -34,19 +31,16 @@
                 🗑️
             </button>
         </div>
-
     </div>
 
-
-
-    {{-- 要素群一覧 --}}
+    {{-- 要素一覧 --}}
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h4 class="mb-0">要素一覧</h4>
-        <a href="{{ route('elements.create', $project->id) }}" class="btn btn btn-outline-secondary">＋ 要素を追加（準備中）</a>
+        <a href="#" class="btn btn-outline-secondary disabled">＋ 要素を追加（準備中）</a>
     </div>
+
     @if($project->elements->isEmpty())
     <p>まだ要素が登録されていません。</p>
-    <a href="{{ route('elements.create', $project->id) }}" class="btn btn btn-outline-secondary">＋ 要素を追加（準備中）</a>
     @else
     <div class="row">
         @foreach($project->elements as $element)
@@ -55,20 +49,13 @@
                 <div class="card-body">
 
                     <div class="d-flex justify-content-between align-items-start mb-2">
-
-                        <!-- タイトル -->
-                        <h5 class="fw-bold text-primary mb-0">
-                            {{ $element->keyword }}
-                        </h5>
-
-                        <!-- ゴミ箱 -->
+                        <h5 class="fw-bold text-primary mb-0">{{ $element->keyword }}</h5>
                         <button class="delete-element-icon btn p-1 border-0 bg-transparent text-danger"
                             data-id="{{ $element->id }}"
                             title="子要素を削除"
                             style="font-size: 1.1rem;">
                             🗑️
                         </button>
-
                     </div>
 
                     @php
@@ -94,16 +81,9 @@
                         </tbody>
                     </table>
 
-                    <div class="mt-auto d-flex flex-column flex-md-row">
-                        <a href="#" class="btn btn-outline-secondary flex-fill mt-2 mb-md-0 disabled">編集(準備中)</a>
-
-                        </button>
-                    </div>
-
                 </div>
             </div>
         </div>
-
         @endforeach
     </div>
     @endif
@@ -123,6 +103,7 @@
     }
 </style>
 @stop
+
 @section('js')
 <script src="{{ asset('js/common.js') }}"></script>
 <script src="{{ asset('js/project.js') }}"></script>

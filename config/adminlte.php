@@ -291,14 +291,14 @@ return [
 
     'menu' => [
         [
-            'text' => '新規プロジェクト作成',
+            'text' => 'プロジェクト一覧',
             'url'  => 'projects',
-            'icon' => 'fas  fa-pen',
+            'icon' => 'fas fa-book',
         ],
         [
-            'text' => 'プロジェクト一覧',
-            'url'  => 'projects/list',
-            'icon' => 'fas fa-book',
+            'text' => '新規プロジェクト作成',
+            'url'  => 'projects/create',
+            'icon' => 'fas  fa-pen',
         ],
 
         // AdminLTEデフォルト

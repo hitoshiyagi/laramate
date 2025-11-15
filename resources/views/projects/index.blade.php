@@ -1,124 +1,61 @@
 @extends('adminlte::page')
 
-@section('title', '新規プロジェクト作成')
+@section('title', 'プロジェクト一覧')
 
 @section('content_header')
-<h1>新規プロジェクト作成</h1>
-@stop
-
-@section('css')
-<link rel="stylesheet" href="{{ asset('css/style.css') }}">
+<h1>あなたのプロジェクト一覧</h1>
 @stop
 
 @section('content')
-<div class="row justify-content-center">
-    <div class="col-md-10">
+<div class="container">
 
-        {{-- 🔹 プロジェクト作成カード --}}
-        <div class="card mt-4" id="project-card">
-            <div class="card-header">プロジェクト作成</div>
-            <div class="card-body">
-                <p>プロジェクト名を入力し、新規プロジェクトを作成します。</p>
-
-                <div class="row mb-3">
-                    <label for="name" class="col-md-4 col-form-label text-md-end">プロジェクト名</label>
-                    <div class="col-md-6">
-                        <input type="text" name="name" id="name" class="form-control" placeholder="例：laramate" required>
-                        <div id="project-error" class="text-danger mt-1"></div>
-                    </div>
-                </div>
-
-                <div class="row mb-0">
-                    <div class="col-md-6 offset-md-4">
-                        <button type="button" class="btn btn-primary" id="create-project-btn">
-                            要素名の生成へ進む
+    @if($projects->isEmpty())
+    <p>まだプロジェクトが登録されていません。</p>
+    <a href="{{ route('projects.create') }}" class="btn btn-primary">
+        ＋ 新しいプロジェクトを作成
+    </a>
+    @else
+    <div class="row">
+        @foreach($projects as $project)
+        <div class="col-md-4 mb-4" id="project-{{ $project->id }}">
+            <div class="card shadow-sm border-0 h-100 hover-scale">
+                <div class="card-body d-flex flex-column">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <h5 class="fw-bold text-primary mb-0">{{ $project->name }}</h5>
+                        <button class="delete-project btn p-1 border-0 bg-transparent text-danger"
+                            data-id="{{ $project->id }}"
+                            title="プロジェクトを削除"
+                            style="font-size: 1rem;">
+                            🗑️
                         </button>
                     </div>
-                </div>
-            </div>
-        </div>
-
-        {{-- 🔹 要素名生成カード --}}
-        <div class="card mt-4" id="element-card" style="display:none;">
-            <div class="card-header">要素名生成</div>
-            <div class="card-body">
-                <form id="element-form">
-                    {{-- プロジェクト名表示 --}}
-                    <div class="row mb-3">
-                        <label class="col-md-4 col-form-label text-md-end">プロジェクト名</label>
-                        <div class="col-md-6">
-                            <input type="text" id="element-project-name" class="form-control" readonly>
-                        </div>
-                    </div>
-
-                    {{-- リポジトリ名表示（自動反映） --}}
-                    <div class="row mb-3">
-                        <label class="col-md-4 col-form-label text-md-end">リポジトリ名</label>
-                        <div class="col-md-6">
-                            <input type="text" id="element-project-repo" class="form-control" readonly>
-                        </div>
-                    </div>
-
-                    {{-- 要素名キーワード --}}
-                    <div class="row mb-3">
-                        <label for="keyword" class="col-md-4 col-form-label text-md-end">要素名キーワード</label>
-                        <div class="col-md-6">
-                            <input type="text" name="keyword" id="keyword" class="form-control" placeholder="例：member" required>
-                        </div>
-                    </div>
-
-                    {{-- 開発環境 --}}
-                    <div class="row mb-3">
-                        <label for="env-select" class="col-md-4 col-form-label text-md-end">開発環境</label>
-                        <div class="col-md-6">
-                            <select name="env" id="env-select" class="form-control" required>
-                                <option value="" disabled selected>選択してください</option>
-                                <option value="xampp">XAMPP</option>
-                                <option value="mamp">MAMP</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    {{-- Laravel バージョン --}}
-                    <div class="row mb-3">
-                        <label for="laravel-version" class="col-md-4 col-form-label text-md-end">Laravelバージョン</label>
-                        <div class="col-md-6">
-                            <select name="laravel_version" id="laravel-version" class="form-control" required>
-                                <option value="">選択してください</option>
-                                <option value="10.*">10系</option>
-                                <option value="11.*">11系</option>
-                                <option value="12.*">12系</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    {{-- 生成ボタン --}}
-                    <div class="row mb-0">
-                        <div class="col-md-6 offset-md-4">
-                            <button type="button" class="btn btn-success" id="preview-elements">要素名を生成する</button>
-                        </div>
-                    </div>
-                </form>
-
-                {{-- 🔹 生成結果プレビュー --}}
-                <div id="generation-result" class="mt-4" style="display:none;">
-                    <div id="result-table" class="bg-light p-3 rounded"></div>
-
-                    <div class="mt-3 col-md-6 offset-md-4">
-                        <button class="btn btn-primary" id="register-elements">登録する</button>
-                        <button class="btn btn-secondary" id="clear-elements">クリア</button>
-                        <div id="generation-message" class="mt-2 text-success" style="display:none;"></div>
-                    </div>
-
-                    <div id="generation-steps-area" style="display:none;" class="mt-4">
-                        <h5>登録後の手順</h5>
-                        <div id="generation-steps" class="d-flex flex-column mb-3"></div>
+                    <p class="text-muted small mb-3">作成日: {{ $project->created_at->format('Y/m/d') }}</p>
+                    <div class="mt-auto">
+                        <a href="{{ route('projects.show', $project->id) }}" class="btn btn-outline-primary w-100">
+                            要素一覧を見る
+                        </a>
                     </div>
                 </div>
             </div>
         </div>
+        @endforeach
     </div>
+    @endif
+
 </div>
+@stop
+
+@section('css')
+<style>
+    .hover-scale {
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .hover-scale:hover {
+        transform: translateY(-4px) scale(1.02);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    }
+</style>
 @stop
 
 @section('js')

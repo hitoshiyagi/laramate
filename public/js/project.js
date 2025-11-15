@@ -1,16 +1,15 @@
 document.addEventListener("DOMContentLoaded", () => {
-    const btn = document.getElementById("create-project-btn");
     const csrfToken = document
         .querySelector('meta[name="csrf-token"]')
         .getAttribute("content");
 
+    // プロジェクト作成
+    const btn = document.getElementById("create-project-btn");
     if (btn) {
         btn.addEventListener("click", () => {
             const nameInput = document.getElementById("name");
             const name = nameInput.value.trim();
             const errorDiv = document.getElementById("project-error");
-
-            // 前回のエラーをクリア
             errorDiv.textContent = "";
 
             if (!name) {
@@ -18,35 +17,36 @@ document.addEventListener("DOMContentLoaded", () => {
                 return;
             }
 
-            fetch("/projects/store", {
+            fetch("/projects", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                     "X-CSRF-TOKEN": csrfToken,
                 },
-                body: JSON.stringify({
-                    name: name,
-                    repo: name,
-                }),
+                body: JSON.stringify({ name: name, repo: name }),
             })
                 .then((res) => res.json())
                 .then((data) => {
                     if (data.success) {
-                        // 要素名生成カードを表示
-                        document.getElementById("element-card").style.display =
-                            "block";
+                        // プロジェクト作成後に要素カード表示
+                        const elementCard =
+                            document.getElementById("element-card");
+                        if (elementCard) elementCard.style.display = "block";
 
-                        // プロジェクト名・リポジトリ名を反映
-                        document.getElementById("element-project-name").value =
-                            data.project.name;
-                        document.getElementById("element-project-repo").value =
-                            data.project.repo;
+                        const projectNameInput = document.getElementById(
+                            "element-project-name"
+                        );
+                        const repoInput = document.getElementById(
+                            "element-project-repo"
+                        );
+                        if (projectNameInput)
+                            projectNameInput.value = data.project.name;
+                        if (repoInput) repoInput.value = data.project.repo;
 
-                        // プロジェクト作成カードを非表示
-                        document.getElementById("project-card").style.display =
-                            "none";
+                        const projectCard =
+                            document.getElementById("project-card");
+                        if (projectCard) projectCard.style.display = "none";
                     } else if (data.errors && data.errors.name) {
-                        // バリデーションエラーを表示
                         errorDiv.textContent = data.errors.name[0];
                     } else {
                         errorDiv.textContent =
@@ -58,4 +58,39 @@ document.addEventListener("DOMContentLoaded", () => {
                 });
         });
     }
+
+    // 親プロジェクト削除（イベント委譲）
+    document.addEventListener("click", (e) => {
+        const target = e.target.closest(".delete-project");
+        if (!target) return;
+
+        const projectId = target.getAttribute("data-id");
+        if (!projectId) return;
+
+        if (!confirm("本当にこのプロジェクトと全ての要素を削除しますか？"))
+            return;
+
+        fetch(`/projects/${projectId}`, {
+            method: "DELETE",
+            headers: {
+                "X-CSRF-TOKEN": csrfToken,
+                "Content-Type": "application/json",
+            },
+        })
+            .then((res) => {
+                if (!res.ok) throw new Error(`サーバーエラー: ${res.status}`);
+                return res.json();
+            })
+            .then((data) => {
+                if (data.success) {
+                    const projectCard = document.getElementById(
+                        `project-${projectId}`
+                    );
+                    if (projectCard) projectCard.remove();
+                } else {
+                    alert(data.message || "削除に失敗しました");
+                }
+            })
+            .catch((err) => alert(err.message || "通信エラーが発生しました"));
+    });
 });
