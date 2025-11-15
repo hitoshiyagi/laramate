@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\Request;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\ElementController;
@@ -23,9 +24,6 @@ Auth::routes();
 // ==========================
 Route::middleware(['auth'])->group(function () {
 
-    // /home も / に統一
-    Route::get('/home', fn() => redirect('/'));
-
     // ==========================
     // Project関連
     // ==========================
@@ -39,6 +37,13 @@ Route::middleware(['auth'])->group(function () {
 
         // プロジェクト作成処理（POST）
         Route::post('/', [ProjectController::class, 'store'])->name('projects.store');
+
+        // プロジェクト重複チェック
+        Route::get('/check-name', [ProjectController::class, 'checkName'])
+            ->name('projects.checkName');
+
+
+        // --- これ以降にワイルドカードルートを定義 ---
 
         // プロジェクト詳細
         Route::get('/{project}', [ProjectController::class, 'show'])->name('projects.show');
@@ -60,5 +65,9 @@ Route::middleware(['auth'])->group(function () {
 
         // 要素削除
         Route::delete('/{element}', [ElementController::class, 'destroy'])->name('elements.destroy');
+
+        //要素重複チェック
+        Route::get('/check', [ElementController::class, 'check'])
+            ->name('elements.check');
     });
 });

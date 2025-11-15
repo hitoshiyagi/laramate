@@ -1,7 +1,17 @@
 document.addEventListener("DOMContentLoaded", () => {
     const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
 
-    // ======== 生成画面用 DOM ========
+    // ===== 半角英数字制限 =====
+    function allowAlphanumericOnly(event) {
+        event.target.value = event.target.value.replace(/[^a-zA-Z0-9]/g, "");
+    }
+    document.querySelectorAll('input[type="text"]').forEach((input) => {
+        input.setAttribute("inputmode", "latin");
+        input.setAttribute("lang", "en");
+        input.addEventListener("focus", () => input.setAttribute("lang", "en"));
+        input.addEventListener("input", allowAlphanumericOnly);
+    });
+
     const projectCard = document.getElementById("project-card");
     const elementCard = document.getElementById("element-card");
     const createProjectBtn = document.getElementById("create-project-btn");
@@ -26,14 +36,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     let Table, Model, Controller, DB;
 
-    // ======== 半角英数字制限 ========
-    function allowAlphanumericOnly(event) {
-        event.target.value = event.target.value.replace(/[^a-zA-Z0-9]/g, "");
-    }
-    document.querySelectorAll('input[type="text"]').forEach((input) => {
-        input.addEventListener("input", allowAlphanumericOnly);
-    });
-
     function pluralize(word) {
         word = word.toLowerCase();
         if (word.endsWith("y")) return word.slice(0, -1) + "ies";
@@ -46,30 +48,51 @@ document.addEventListener("DOMContentLoaded", () => {
         return word + "s";
     }
 
-    // ======== プロジェクト作成 ========
+    // ===== プロジェクト作成・要素画面切替 =====
     createProjectBtn?.addEventListener("click", async () => {
         const name = projectNameInput.value.trim();
         if (!name) return alert("プロジェクト名を入力してください");
 
         try {
+            // プロジェクト重複チェック (GET)
+            const params = new URLSearchParams({ name });
+            const checkRes = await fetch(
+                `/projects/check-name?${params.toString()}`,
+                {
+                    method: "GET",
+                    headers: {
+                        Accept: "application/json",
+                    },
+                }
+            );
+
+            const checkData = await checkRes.json();
+            if (checkData.exists)
+                return alert("このプロジェクト名は既に使用されています");
+
+            // プロジェクト作成 (POST)
             const res = await fetch("/projects", {
                 method: "POST",
                 headers: {
-                    "Content-Type": "application/json",
+                    "Content-Type": "application/x-www-form-urlencoded",
                     "X-CSRF-TOKEN": csrfToken,
                 },
-                body: JSON.stringify({ name }),
+                body: new URLSearchParams({ name }),
             });
-            if (!res.ok) throw new Error(`サーバーエラー: ${res.status}`);
+
+            // プロジェクト作成処理は成功時にプロジェクトオブジェクト全体を返していると想定
             const data = await res.json();
             if (data.success) {
+                // ここでプロジェクトIDが必要になる可能性を考慮し、
+                // project-cardに hidden input でIDを持たせるなどの設計変更が必要になる場合がありますが、
+                // 今回は name だけを渡し、サーバー側で project_id に変換すると想定します。
                 elementProjectName.value = data.project.name;
                 elementProjectRepo.value = data.project.repo;
-                elementProjectDb.value = data.project.database_name; // ← database_name に統一
+                elementProjectDb.value = data.project.database_name;
                 projectCard.style.display = "none";
                 elementCard.style.display = "block";
             } else {
-                alert(data.message || "作成に失敗しました");
+                alert(data.message || "作成に失敗しました。");
             }
         } catch (err) {
             console.error(err);
@@ -77,7 +100,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
-    // ======== プレビュー生成 ========
+    // ===== プレビュー生成 =====
     previewBtn?.addEventListener("click", () => {
         const keyword = keywordInput.value.trim();
         const env = envSelect.value;
@@ -116,7 +139,7 @@ document.addEventListener("DOMContentLoaded", () => {
         resultTable.scrollIntoView({ behavior: "smooth" });
     });
 
-    // ======== 要素登録 ========
+    // ===== 要素登録 =====
     registerBtn?.addEventListener("click", async () => {
         const projectName = elementProjectName.value.trim();
         const keyword = keywordInput.value.trim();
@@ -126,13 +149,39 @@ document.addEventListener("DOMContentLoaded", () => {
             return alert("すべての項目を入力してください。");
 
         try {
+            // ★★★ 修正箇所：子要素の重複チェックを追加 ★★★
+            const checkParams = new URLSearchParams({
+                name: keyword,
+                // プロジェクト名からIDを特定するために、ここではプロジェクト名を渡します。
+                // サーバー側 (ElementController@check) でIDに変換する前提です。
+                project_name: projectName,
+            });
+            const checkRes = await fetch(
+                `/elements/check?${checkParams.toString()}`,
+                {
+                    method: "GET",
+                    headers: {
+                        Accept: "application/json",
+                    },
+                }
+            );
+
+            const checkData = await checkRes.json();
+            if (checkData.exists) {
+                return alert(
+                    `要素名 "${keyword}" はこのプロジェクト内で既に使用されています`
+                );
+            }
+            // ★★★ 修正箇所終わり ★★★
+
+            // 本登録処理 (POST)
             const res = await fetch("/elements", {
                 method: "POST",
                 headers: {
-                    "Content-Type": "application/json",
+                    "Content-Type": "application/x-www-form-urlencoded",
                     "X-CSRF-TOKEN": csrfToken,
                 },
-                body: JSON.stringify({
+                body: new URLSearchParams({
                     project_name: projectName,
                     keyword,
                     env,
@@ -143,7 +192,6 @@ document.addEventListener("DOMContentLoaded", () => {
                     database_name: DB,
                 }),
             });
-            if (!res.ok) throw new Error(`サーバーエラー: ${res.status}`);
             const data = await res.json();
             if (data.success) {
                 messageDiv.textContent = "要素を登録しました。";
@@ -169,11 +217,10 @@ document.addEventListener("DOMContentLoaded", () => {
                 <p>${step.description}</p>
                 ${
                     step.command
-                        ? `
-                    <div class="code-header">
-                        <button class="copy-btn"><i class="far fa-copy"></i> コードをコピーする</button>
-                    </div>
-                    <pre class="code-block">${step.command}</pre>`
+                        ? `<div class="code-header">
+                               <button class="copy-btn"><i class="far fa-copy"></i> コードをコピーする</button>
+                           </div>
+                           <pre class="code-block">${step.command}</pre>`
                         : ""
                 }
             `;
@@ -197,6 +244,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
+    // ===== クリア =====
     clearBtn?.addEventListener("click", () => {
         projectNameInput.value = "";
         elementProjectName.value = "";
@@ -209,65 +257,5 @@ document.addEventListener("DOMContentLoaded", () => {
         generationResult.style.display = "none";
         stepsArea.style.display = "none";
         messageDiv.style.display = "none";
-    });
-
-    // ======== 詳細画面用 子要素削除 ========
-    document.querySelectorAll(".delete-element-icon").forEach((btn) => {
-        btn.addEventListener("click", async () => {
-            const elementId = btn.dataset.id;
-            if (!elementId) return;
-            if (!confirm("本当にこの要素を削除しますか？")) return;
-
-            try {
-                const res = await fetch(`/elements/${elementId}`, {
-                    method: "DELETE",
-                    headers: {
-                        "X-CSRF-TOKEN": csrfToken,
-                        Accept: "application/json",
-                    },
-                });
-                const data = await res.json();
-                if (data.success) {
-                    const elCard = document.getElementById(
-                        `element-${elementId}`
-                    );
-                    if (elCard) elCard.remove();
-                } else {
-                    alert(data.message || "削除に失敗しました");
-                }
-            } catch (err) {
-                console.error(err);
-                alert("通信エラーが発生しました");
-            }
-        });
-    });
-
-    // ======== 詳細画面用 プロジェクト削除 ========
-    document.querySelectorAll(".delete-project").forEach((btn) => {
-        btn.addEventListener("click", async () => {
-            const projectId = btn.dataset.id;
-            if (!projectId) return;
-            if (!confirm("本当にこのプロジェクトを削除しますか？")) return;
-
-            try {
-                const res = await fetch(`/projects/${projectId}`, {
-                    method: "DELETE",
-                    headers: {
-                        "X-CSRF-TOKEN": csrfToken,
-                        Accept: "application/json",
-                    },
-                });
-                const data = await res.json();
-                if (data.success) {
-                    alert("プロジェクトを削除しました");
-                    window.location.href = "/projects";
-                } else {
-                    alert(data.message || "削除に失敗しました");
-                }
-            } catch (err) {
-                console.error(err);
-                alert("通信エラーが発生しました");
-            }
-        });
     });
 });

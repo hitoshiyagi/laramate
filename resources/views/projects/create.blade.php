@@ -21,7 +21,10 @@
                 <div class="row mb-3">
                     <label for="name" class="col-md-4 col-form-label text-md-end">プロジェクト名</label>
                     <div class="col-md-6">
-                        <input type="text" id="name" class="form-control" placeholder="例：laramate">
+                        <input type="text" id="name" class="form-control" pattern="[a-zA-Z0-9]*"
+                            inputmode="latin"
+                            autocomplete="off"
+                            placeholder="例: laramate" placeholder="例：laramate">
                         <small class="form-text text-muted">半角英数字のみで入力してください（例：laramate）</small>
                     </div>
                 </div>
@@ -65,7 +68,10 @@
                         <label for="keyword" class="col-md-4 col-form-label text-md-end">要素名キーワード</label>
                         <div class="col-md-6">
                             <input type="text" name="keyword" id="keyword" class="form-control"
-                                placeholder="例：member" required pattern="^[a-zA-Z0-9]+$"
+                                placeholder="例：member" pattern="[a-zA-Z0-9]*"
+                                inputmode="latin"
+                                autocomplete="off"
+                                placeholder="例: member"
                                 title="半角英数字のみ入力可能です">
                             <small class="form-text text-muted">半角英数字のみで入力してください（例：member）</small>
                         </div>

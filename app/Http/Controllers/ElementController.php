@@ -9,6 +9,9 @@ use App\Models\Project;
 
 class ElementController extends Controller
 {
+    /**
+     * 子要素一覧取得（ログインユーザーのみ）
+     */
     public function index()
     {
         $userId = Auth::id();
@@ -23,8 +26,12 @@ class ElementController extends Controller
         ]);
     }
 
+    /**
+     * 子要素作成
+     */
     public function store(Request $request)
     {
+        // バリデーション
         $validated = $request->validate([
             'project_name'    => ['required', 'string', 'max:255', 'regex:/^[a-zA-Z0-9]+$/'],
             'keyword'         => ['required', 'string', 'max:255', 'regex:/^[a-zA-Z0-9]+$/'],
@@ -38,11 +45,13 @@ class ElementController extends Controller
 
         $userId = Auth::id();
 
+        // プロジェクトが存在しなければ作成
         $project = Project::firstOrCreate(
             ['name' => $validated['project_name'], 'user_id' => $userId],
             ['database_name' => $validated['database_name']]
         );
 
+        // 子要素作成
         $element = Element::create([
             'project_id'      => $project->id,
             'keyword'         => $validated['keyword'],
@@ -54,6 +63,7 @@ class ElementController extends Controller
             'database_name'   => $validated['database_name'],
         ]);
 
+        // 開発ステップ例
         $steps = [
             [
                 'title' => 'ステップ①：作業フォルダに移動',
@@ -89,8 +99,12 @@ class ElementController extends Controller
         ]);
     }
 
+    /**
+     * 子要素削除
+     */
     public function destroy(Element $element)
     {
+        // 権限チェック
         if ($element->project->user_id !== Auth::id()) {
             return response()->json([
                 'success' => false,
