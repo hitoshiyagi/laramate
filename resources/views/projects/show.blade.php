@@ -65,28 +65,25 @@
         <div class="col-md-6 mb-4" id="element-{{ $element->id }}">
             <div class="card shadow-sm h-100 hover-scale">
                 <div class="card-body">
-
-                        <div class="d-flex justify-content-between align-items-center mb-2">
-                            <h5 class="fw-bold text-primary me-3">{{ $element->keyword }}</h5>
-
-                            <div class="d-flex flex-shrink-0">
-                                @if($element->project)
-                                <a href="{{ route('elements.edit', $element->id) }}"
-                                    class="btn border-0 bg-transparent text-secondary mr-2"
-                                    title="子要素を編集"
-                                    style="font-size: 1.4rem;">
-                                    <i class="fa fa-pencil-square-o"></i>
-                                </a>
-                                @endif
-
-                                <button class="delete-element-icon btn p-0 border-0 bg-transparent text-secondary"
-                                    data-id="{{ $element->id }}"
-                                    title="子要素を削除"
-                                    style="font-size: 1.4rem;">
-                                    <i class="fa fa-trash-o"></i>
-                                </button>
-                            </div>
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <h5 class="fw-bold text-primary me-3">{{ $element->keyword }}</h5>
+                        <div class="d-flex flex-shrink-0">
+                            @if($element->project)
+                            <a href="{{ route('elements.edit', $element->id) }}"
+                                class="btn border-0 bg-transparent text-secondary mr-2"
+                                title="子要素を編集"
+                                style="font-size: 1.4rem;">
+                                <i class="fa fa-pencil-square-o"></i>
+                            </a>
+                            @endif
+                            <button class="delete-element-icon btn p-0 border-0 bg-transparent text-secondary"
+                                data-id="{{ $element->id }}"
+                                title="子要素を削除"
+                                style="font-size: 1.4rem;">
+                                <i class="fa fa-trash-o"></i>
+                            </button>
                         </div>
+                    </div>
 
                     @php
                     $fields = [
@@ -112,11 +109,9 @@
                 </div>
             </div>
         </div>
+        @endforeach
     </div>
-</div>
-@endforeach
-</div>
-@endif
+    @endif
 
 </div>
 @stop
