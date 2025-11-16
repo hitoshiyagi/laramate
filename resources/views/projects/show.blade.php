@@ -6,6 +6,20 @@
 <h1>{{ $project->name }} の詳細</h1>
 @stop
 
+@section('css')
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+<style>
+    .hover-scale {
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .hover-scale:hover {
+        transform: translateY(-4px) scale(1.02);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    }
+</style>
+@stop
+
 @section('content')
 <div class="container">
 
@@ -28,11 +42,11 @@
                 作成日: {{ $project->created_at->format('Y/m/d') }}
             </p>
 
-            <button class="delete-project btn p-1 border-0 bg-transparent text-danger"
+            <button class="delete-project btn p-0 border-0 bg-transparent text-secondary"
                 data-id="{{ $project->id }}"
                 title="プロジェクトを削除"
-                style="font-size: 1rem;">
-                🗑️
+                style="font-size: 1.4rem;">
+                <i class="fa fa-trash-o"></i>
             </button>
         </div>
     </div>
@@ -52,15 +66,27 @@
             <div class="card shadow-sm h-100 hover-scale">
                 <div class="card-body">
 
-                    <div class="d-flex justify-content-between align-items-start mb-2">
-                        <h5 class="fw-bold text-primary mb-0">{{ $element->keyword }}</h5>
-                        <button class="delete-element-icon btn p-1 border-0 bg-transparent text-danger"
-                            data-id="{{ $element->id }}"
-                            title="子要素を削除"
-                            style="font-size: 1.1rem;">
-                            🗑️
-                        </button>
-                    </div>
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <h5 class="fw-bold text-primary me-3">{{ $element->keyword }}</h5>
+
+                            <div class="d-flex flex-shrink-0">
+                                @if($element->project)
+                                <a href="{{ route('elements.edit', $element->id) }}"
+                                    class="btn border-0 bg-transparent text-secondary mr-2"
+                                    title="子要素を編集"
+                                    style="font-size: 1.4rem;">
+                                    <i class="fa fa-pencil-square-o"></i>
+                                </a>
+                                @endif
+
+                                <button class="delete-element-icon btn p-0 border-0 bg-transparent text-secondary"
+                                    data-id="{{ $element->id }}"
+                                    title="子要素を削除"
+                                    style="font-size: 1.4rem;">
+                                    <i class="fa fa-trash-o"></i>
+                                </button>
+                            </div>
+                        </div>
 
                     @php
                     $fields = [
@@ -83,28 +109,16 @@
                             @endforeach
                         </tbody>
                     </table>
-
                 </div>
             </div>
         </div>
-        @endforeach
     </div>
-    @endif
+</div>
+@endforeach
+</div>
+@endif
 
 </div>
-@stop
-
-@section('css')
-<style>
-    .hover-scale {
-        transition: transform 0.2s ease, box-shadow 0.2s ease;
-    }
-
-    .hover-scale:hover {
-        transform: translateY(-4px) scale(1.02);
-        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
-    }
-</style>
 @stop
 
 @section('js')

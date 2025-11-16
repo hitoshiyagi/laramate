@@ -19,9 +19,10 @@ class Element extends Model
         'controller_name',
     ];
 
-    // 🔸 要素群は1つのプロジェクトに属する
     public function project()
     {
         return $this->belongsTo(Project::class);
     }
+
+
 }

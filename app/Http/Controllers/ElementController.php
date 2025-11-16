@@ -45,13 +45,13 @@ class ElementController extends Controller
 
         $userId = Auth::id();
 
-        // プロジェクトが存在しなければ作成
+    // プロジェクトが存在しなければ作成
         $project = Project::firstOrCreate(
             ['name' => $validated['project_name'], 'user_id' => $userId],
             ['database_name' => $validated['database_name']]
         );
 
-        // 子要素作成
+    // 子要素作成
         $element = Element::create([
             'project_id'      => $project->id,
             'keyword'         => $validated['keyword'],
@@ -63,7 +63,7 @@ class ElementController extends Controller
             'database_name'   => $validated['database_name'],
         ]);
 
-        // 開発ステップ例
+    // 開発ステップ例
         $steps = [
             [
                 'title' => 'ステップ①：作業フォルダに移動',
@@ -97,6 +97,36 @@ class ElementController extends Controller
             'element' => $element,
             'steps'   => $steps,
         ]);
+    }
+
+    // 編集画面表示
+    public function edit(Element $element)
+    {
+        if ($element->project->user_id !== Auth::id()) {
+            abort(403);
+        }
+
+        return view('elements.edit', compact('element')); // ← view名を edit に
+    }
+
+    // 更新処理
+    public function update(Request $request, Element $element)
+    {
+        if ($element->project->user_id !== Auth::id()) {
+            abort(403);
+        }
+
+        $validated = $request->validate([
+            'keyword' => ['required', 'string', 'max:255'],
+            'table_name' => ['required', 'string', 'max:255'],
+            'model_name' => ['required', 'string', 'max:255'],
+            'controller_name' => ['required', 'string', 'max:255'],
+        ]);
+
+        $element->update($validated);
+
+        return redirect()->route('projects.show', $element->project_id)
+            ->with('success', '要素を更新しました');
     }
 
     /**

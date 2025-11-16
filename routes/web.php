@@ -66,8 +66,18 @@ Route::middleware(['auth'])->group(function () {
         // 要素削除
         Route::delete('/{element}', [ElementController::class, 'destroy'])->name('elements.destroy');
 
-        //要素重複チェック
-        Route::get('/check', [ElementController::class, 'check'])
-            ->name('elements.check');
+        // 要素重複チェック
+        Route::get('/check', [ElementController::class, 'check'])->name('elements.check');
     });
+
+    // ==========================
+    // 要素編集
+    // ==========================
+    Route::prefix('elements')->group(function () {
+        // 編集画面を表示
+        Route::get('{element}/edit', [ElementController::class, 'edit'])->name('elements.edit');
+
+        // 編集内容を保存
+        Route::put('{element}', [ElementController::class, 'update'])->name('elements.update');
+        });
 });
