@@ -131,123 +131,235 @@
 
 @section('css')
 <style>
-    /* カード全体のマージン調整 */
-    .card {
-        margin-bottom: 20px;
+    /*
+     * 1. 全体設定
+     */
+    body {
+        /* OS標準のモダンなフォント設定 */
+        font-family: 'Inter', 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
     }
 
-    /* プレビューのテーブル */
+    /*
+     * 2. カードのモダン化
+     */
+    .card {
+        /* 控えめでモダンなシャドウを追加し、浮遊感を出す */
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.06);
+        border: none;
+        /* デフォルトの境界線を削除 */
+        border-radius: 0.75rem;
+        /* 角を丸くする */
+        margin-bottom: 24px;
+        /* マージンを少し増やす */
+    }
+
+    .card-header {
+        /* ヘッダーの背景を白にし、下線で区切る（AdminLTEのデフォルトを尊重しつつ） */
+        background-color: #fff;
+        border-bottom: 1px solid #e9ecef;
+        font-weight: 600;
+        /* フォントを少し太く */
+        font-size: 1.15rem;
+        padding-top: 1rem;
+        padding-bottom: 1rem;
+    }
+
+    .form-control,
+    .form-select {
+        /* 入力フィールドの角を丸くし、フォーカス時のスタイルを改善 */
+        border-radius: 0.5rem;
+        transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+    }
+
+    /*
+     * 3. プレビューテーブルのモダン化
+     */
+    #result-table {
+        background-color: #ffffff;
+        /* 背景色を白に */
+        border: 1px solid #e9ecef;
+        border-radius: 0.75rem;
+        padding: 0;
+        /* 親要素のパディングを削除 */
+        overflow: hidden;
+        /* 角丸を適用するために必要 */
+    }
+
     #result-table table {
         width: 100%;
         border-collapse: collapse;
+        margin: 0;
     }
 
     #result-table th,
     #result-table td {
-        border: 1px solid #dee2e6;
-        padding: 8px;
-        text-align: left;
+        border: none;
+        /* 罫線を削除 */
+        border-bottom: 1px solid #e9ecef;
+        /* 下線のみ残す */
+        padding: 12px 16px;
+        /* パディングを増やす */
+        vertical-align: middle;
+        font-size: 0.95rem;
     }
 
     #result-table th {
         background-color: #f8f9fa;
+        /* ヘッダーの背景を明るいグレーに */
+        font-weight: 600;
+        color: #495057;
     }
 
-    /* ステップカード */
+    #result-table tr:last-child td {
+        border-bottom: none;
+        /* 最後の行の下線を削除 */
+    }
+
+    /*
+     * 4. ステップカードのデザイン
+     */
     .step-card {
         background-color: #f8f9fa;
-        border: 1px solid #dee2e6;
-        border-radius: 5px;
-        padding: 15px;
-        margin-bottom: 10px;
-        position: relative;
+        /* 明るい背景 */
+        border: 1px solid #e3e8ec;
+        border-radius: 0.5rem;
+        padding: 16px;
+        margin-bottom: 12px;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
 
-    /* コードブロック */
+    .step-card:hover {
+        /* ホバーでわずかに持ち上がり、モダンなインタラクションを追加 */
+        transform: translateY(-2px);
+        box-shadow: 0 8px 15px rgba(0, 0, 0, 0.05);
+    }
+
+    /*
+     * 5. コードブロックのモダン化
+     */
     .code-block {
-        background-color: #272822;
-        color: #f8f8f2;
-        padding: 10px;
-        border-radius: 4px;
-        font-family: 'Courier New', Courier, monospace;
+        /* モダンなダークテーマ */
+        background-color: #2c3e50;
+        /* 少し明るいダークブルー */
+        color: #ecf0f1;
+        /* 明るいテキスト */
+        padding: 15px;
+        border-radius: 0.5rem;
+        font-family: 'Fira Code', 'Consolas', 'Monaco', monospace;
+        /* モダンなフォント */
         overflow-x: auto;
         white-space: pre-wrap;
         word-break: break-all;
-        margin-top: 5px;
+        margin-top: 10px;
+        font-size: 0.9rem;
+        border: 1px solid rgba(255, 255, 255, 0.1);
     }
 
-    /* コードヘッダーとコピーボタン */
     .code-header {
         display: flex;
         justify-content: flex-end;
-        margin-bottom: 5px;
+        margin-bottom: 8px;
     }
 
     .copy-btn {
-        background-color: #6c757d;
+        /* より目立つが控えめなボタンデザイン */
+        background-color: #3498db;
+        /* プライマリーブルー */
         border: none;
         color: #fff;
-        padding: 4px 8px;
-        border-radius: 4px;
+        padding: 6px 12px;
+        border-radius: 0.5rem;
         cursor: pointer;
-        font-size: 0.9rem;
-        display: flex;
-        align-items: center;
-        gap: 5px;
+        font-size: 0.85rem;
+        font-weight: 500;
+        transition: background-color 0.2s ease;
     }
 
     .copy-btn:hover {
-        background-color: #5a6268;
+        background-color: #2980b9;
+        /* ホバー時の色 */
     }
 
-    /* コピー完了時に色を変える */
+    /* コピー完了時のデザイン */
     .copy-btn.copied {
-        background-color: #28a745 !important;
+        background-color: #2ecc71 !important;
+        /* 成功の緑 */
     }
 
-    /* 全体の余白 */
-    #generation-result {
-        margin-top: 20px;
-    }
-
-    /* ボタン間隔 */
+    /*
+     * 6. ユーティリティとボタン
+     */
     #register-elements,
     #clear-elements {
-        margin-right: 10px;
+        margin-right: 15px;
+        /* ボタン間隔を調整 */
     }
 
-    /* ====== レスポンシブ対応 ====== */
+    .btn-primary,
+    .btn-success {
+        /* ボタンに控えめなシャドウと丸みを適用 */
+        border-radius: 0.5rem;
+        font-weight: 500;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        transition: all 0.2s ease;
+    }
+
+    .btn-primary:hover,
+    .btn-success:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
+    }
+
+    /*
+     * 7. レスポンシブ対応の改善
+     */
     @media (max-width: 768px) {
 
-        #result-table table,
+        .card {
+            border-radius: 0.5rem;
+            margin-bottom: 16px;
+        }
+
         #result-table th,
         #result-table td {
-            font-size: 0.9rem;
+            padding: 10px 12px;
+            font-size: 0.85rem;
+        }
+
+        /* フォームラベルの配置調整 */
+        #element-card .col-md-4,
+        #project-card .col-md-4 {
+            text-align: left !important;
+            /* モバイルでは左揃えに */
+            margin-bottom: 4px;
+        }
+
+        /* ボタンの配置 */
+        #element-card .col-md-6.offset-md-4,
+        #project-card .col-md-6.offset-md-4 {
+            text-align: center;
+            margin-left: 0;
+            width: 100%;
+        }
+
+        /* 登録・クリアボタンの調整 */
+        #generation-result .mt-3.col-md-6.offset-md-4 {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-left: 0;
+            width: 100%;
+        }
+
+        #register-elements,
+        #clear-elements {
+            width: 100%;
+            margin-right: 0;
+            margin-bottom: 8px;
         }
 
         .step-card {
-            padding: 10px;
-        }
-
-        .copy-btn {
-            padding: 3px 6px;
-            font-size: 0.8rem;
-        }
-
-        #element-card .row.mb-3,
-        #project-card .row.mb-3 {
-            flex-direction: column;
-        }
-
-        #element-card .col-md-6,
-        #project-card .col-md-6 {
-            width: 100%;
-            margin-top: 5px;
-        }
-
-        #element-card .col-md-6.offset-md-4,
-        #project-card .col-md-6.offset-md-4 {
-            margin-left: 0;
+            padding: 12px;
         }
     }
 </style>
