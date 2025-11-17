@@ -54,7 +54,10 @@
     {{-- 要素一覧 --}}
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h4 class="mb-0">要素一覧</h4>
-        <a href="#" class="btn btn-outline-secondary disabled">＋ 要素を追加（準備中）</a>
+        <a href="{{ route('elements.create_additional', $project->id) }}" class="btn btn-primary">
+            ＋ 要素を追加
+        </a>
+
     </div>
 
     @if($project->elements->isEmpty())
@@ -66,7 +69,7 @@
             <div class="card shadow-sm h-100 hover-scale">
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center mb-2">
-                        <h5 class="fw-bold text-primary me-3">{{ $element->keyword }}</h5>
+                        <h5 class="fw-bold text-primary me-3">{{$element->keyword }}</h5>
                         <div class="d-flex flex-shrink-0">
                             @if($element->project)
                             <a href="{{ route('elements.edit', $element->id) }}"

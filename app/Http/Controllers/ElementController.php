@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\ElementController;
 use App\Models\Element;
 use App\Models\Project;
 
@@ -98,6 +99,56 @@ class ElementController extends Controller
             'steps'   => $steps,
         ]);
     }
+
+    // 子要素の追加
+    public function createAdditional($projectId)
+    {
+        $project = Project::findOrFail($projectId);
+
+        if ($project->user_id !== Auth::id()) {
+            abort(403);
+        }
+
+        return view('elements.create_additional', compact('project'));
+    }
+
+    /**
+     * 追加要素登録
+     */
+    public function storeAdditional(Request $request)
+    {
+        $validated = $request->validate([
+            'project_id'      => ['required', 'integer', 'exists:projects,id'],
+            'keyword'         => ['required', 'string', 'max:255', 'regex:/^[a-zA-Z0-9]+$/'],
+            'env'             => ['required', 'string', 'max:50'],
+            'laravel_version' => ['required', 'string', 'max:50'],
+            'table_name'      => ['required', 'string', 'max:255', 'regex:/^[a-zA-Z0-9_]+$/'],
+            'model_name'      => ['required', 'string', 'max:255', 'regex:/^[a-zA-Z0-9]+$/'],
+            'controller_name' => ['required', 'string', 'max:255', 'regex:/^[a-zA-Z0-9]+$/'],
+        ]);
+
+        $project = Project::findOrFail($validated['project_id']);
+
+        if ($project->user_id !== auth()->id()) {
+            abort(403);
+        }
+
+        $element = Element::create([
+            'project_id'      => $project->id,
+            'keyword'         => $validated['keyword'],
+            'env'             => $validated['env'],
+            'laravel_version' => $validated['laravel_version'],
+            'table_name'      => $validated['table_name'],
+            'model_name'      => $validated['model_name'],
+            'controller_name' => $validated['controller_name'],
+            'database_name'   => $project->database_name, // プロジェクトのDB名を引き継ぐ
+        ]);
+
+        return redirect()
+            ->route('projects.show', $project->id)
+            ->with('success', '子要素を追加しました');
+    }
+
 
     // 編集画面表示
     public function edit(Element $element)

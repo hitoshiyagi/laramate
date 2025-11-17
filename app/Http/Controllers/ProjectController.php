@@ -6,6 +6,7 @@ use App\Models\Project;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
+use App\Http\Controllers\ElementController;
 
 class ProjectController extends Controller
 {
@@ -46,6 +47,47 @@ class ProjectController extends Controller
         ]);
 
         return response()->json(['success' => true, 'project' => $project]);
+    }
+
+    public function storeAdditional(Request $request)
+    {
+        // バリデーション
+        $validated = $request->validate([
+            'project_id'       => ['required', 'exists:projects,id'],
+            'keyword'          => ['required', 'alpha_num'],
+            'env'              => ['required', 'in:xampp,mamp'],
+            'laravel_version'  => ['required', 'in:10.*,11.*,12.*'],
+            'table_name'       => ['required', 'string'],
+            'model_name'       => ['required', 'string'],
+            'controller_name'  => ['required', 'string'],
+        ]);
+
+        // 同一プロジェクト内で keyword の重複チェック
+        $exists = Element::where('project_id', $request->project_id)
+            ->where('keyword', $request->keyword)
+            ->exists();
+
+        if ($exists) {
+            return back()
+                ->withErrors(['keyword' => 'このキーワードは既に登録されています'])
+                ->withInput();
+        }
+
+        // 保存
+        Element::create([
+            'project_id'      => $request->project_id,
+            'keyword'         => $request->keyword,
+            'env'             => $request->env,
+            'laravel_version' => $request->laravel_version,
+            'table_name'      => $request->table_name,
+            'model_name'      => $request->model_name,
+            'controller_name' => $request->controller_name,
+        ]);
+
+        // プロジェクト詳細へ戻る
+        return redirect()
+            ->route('projects.show', $request->project_id)
+            ->with('success', '子要素を追加しました');
     }
 
     // プロジェクト詳細
