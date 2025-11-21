@@ -9,9 +9,15 @@ use App\Http\Controllers\ElementController;
 // ==========================
 // トップページ（ダッシュボード）
 // ==========================
-Route::get('/', [HomeController::class, 'index'])
+Route::get('home', [HomeController::class, 'index'])
     ->middleware('auth')
-    ->name('dashboard');
+    ->name('home');
+
+Route::get('/', function () {
+    return Auth::check()
+        ? redirect()->route('home')
+        : view('landing');
+});
 
 // ==========================
 // 認証ルート

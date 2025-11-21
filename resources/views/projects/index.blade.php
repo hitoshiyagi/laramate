@@ -8,17 +8,10 @@
 
 @section('css')
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
-<style>
-    .hover-scale {
-        transition: transform 0.2s ease, box-shadow 0.2s ease;
-    }
-
-    .hover-scale:hover {
-        transform: translateY(-4px) scale(1.02);
-        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
-    }
-</style>
+{{-- <link rel="stylesheet" href="/css/admin_custom.css"> --}}
+@vite('resources/css/app.css')
 @stop
+
 @section('content')
 <div class="container">
 
@@ -35,10 +28,10 @@
                 <div class="card-body d-flex flex-column">
                     <div class="d-flex justify-content-between align-items-center mb-2">
                         <h5 class="fw-bold text-primary mb-0">{{ $project->name }}</h5>
-                        <button class=" delete-project btn p-0 border-0 bg-transparent text-secondary"
+                        <button class="btn delete-project border-0 bg-transparent text-secondary"
                             data-id="{{ $project->id }}"
                             title="プロジェクトを削除"
-                            style="font-size: 1.4rem;">
+                            style="font-size: 1.6rem;">
                             <i class="fa fa-trash-o"></i>
                         </button>
                     </div>
@@ -59,6 +52,6 @@
 @stop
 
 @section('js')
-<script src="{{ asset('js/project.js') }}"></script>
 <script src="{{ asset('js/element.js') }}"></script>
+<script src="{{ asset('js/project.js') }}"></script>
 @stop

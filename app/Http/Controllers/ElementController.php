@@ -185,7 +185,7 @@ class ElementController extends Controller
     // -------------------------------
     private function generateDevSteps(Project $project, Element $element)
     {
-        // 'mamp' または 'xampp' 
+        // 'mamp' または 'xampp'
         if ($element->env === 'mamp') {
             $dbPassword = 'root';
         } elseif ($element->env === 'xampp') {
