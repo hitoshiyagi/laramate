@@ -20,9 +20,9 @@ Laravel プロジェクトの構成要素（モデル名・コントローラ名
 ## App Demo  
 （デモ URL を後で入力）
 
-🔗 **GitHub Repository**  
-（リポジトリ URL を後で入力）
-
+TestUser
+ user id:
+ password:
 ---
 
 ## 開発期間
