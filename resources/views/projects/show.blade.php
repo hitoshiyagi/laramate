@@ -8,8 +8,7 @@
 
 @section('css')
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
-{{-- <link rel="stylesheet" href="/css/admin_custom.css"> --}}
-@vite('resources/css/app.css')
+<link rel="stylesheet" href="{{ asset('build/assets/app-96e1218c.css') }}">
 @stop
 
 @section('content')
@@ -49,7 +48,6 @@
         <a href="{{ route('elements.create_additional', $project->id) }}" class="btn btn-primary">
             ＋ 要素を追加
         </a>
-
     </div>
 
     @if($project->elements->isEmpty())
@@ -102,16 +100,3 @@
                         </tbody>
                     </table>
                 </div>
-            </div>
-        </div>
-        @endforeach
-    </div>
-    @endif
-
-</div>
-@stop
-
-@section('js')
-<script src="{{ asset('js/element.js') }}"></script>
-<script src="{{ asset('js/project.js') }}"></script>
-@stop

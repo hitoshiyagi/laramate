@@ -8,6 +8,7 @@
 
 @section('css')
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+<link rel="stylesheet" href="{{ asset('build/assets/app-96e1218c.css') }}">
 <style>
     .step-card {
         background: #ffffff;
@@ -23,20 +24,17 @@
         box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
     }
 
-    /* タイトル部分 */
     .step-card h5 {
         margin-bottom: 10px;
         font-weight: 600;
     }
 
-    /* --- コピー用ヘッダー --- */
     .code-header {
         display: flex;
         justify-content: flex-end;
         margin-bottom: 8px;
     }
 
-    /* コピーするボタン */
     .copy-btn {
         padding: 6px 12px;
         background: #1976d2;
@@ -56,7 +54,6 @@
         box-shadow: 0 2px 6px rgba(25, 118, 210, 0.35);
     }
 
-    /* --- コードブロック(pre) --- */
     .code-block {
         background: #f5f5f5;
         padding: 14px 18px;
@@ -70,7 +67,6 @@
         border-left: 4px solid #1976d2;
     }
 
-    /* スクロールバー（Chrome用） */
     .code-block::-webkit-scrollbar {
         height: 6px;
     }
@@ -84,7 +80,6 @@
         background: transparent;
     }
 </style>
-@vite('resources/css/app.css')
 @stop
 
 @section('content')
@@ -106,7 +101,7 @@
                         <input type="text" id="name" class="form-control" pattern="[a-zA-Z0-9]*"
                             inputmode="latin"
                             autocomplete="off"
-                            placeholder="例: laramate" placeholder="例：laramate">
+                            placeholder="例: laramate">
                         <small class="form-text text-muted">半角英数字のみで入力してください（例：laramate）</small>
                     </div>
                 </div>
@@ -124,7 +119,6 @@
             <div class="card-header bg-primary">要素名生成</div>
             <div class="card-body">
                 <form id="element-form">
-
                     <div class="row mb-3">
                         <label class="col-md-4 col-form-label text-md-end">プロジェクト名</label>
                         <div class="col-md-6">
@@ -150,7 +144,7 @@
                         <label for="keyword" class="col-md-4 col-form-label text-md-end">要素名キーワード</label>
                         <div class="col-md-6">
                             <input type="text" name="keyword" id="keyword" class="form-control"
-                                placeholder="例：member" pattern="[a-zA-Z0-9]*"
+                                pattern="[a-zA-Z0-9]*"
                                 inputmode="latin"
                                 autocomplete="off"
                                 placeholder="例: member"
@@ -211,8 +205,8 @@
 </div>
 @stop
 
-
 @section('js')
+<script src="{{ asset('build/assets/app-4a98ec98.js') }}"></script>
 <script src="{{ asset('js/element.js') }}"></script>
 <script src="{{ asset('js/project.js') }}"></script>
 @stop
