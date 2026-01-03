@@ -8,8 +8,7 @@
 
 @section('css')
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
-{{-- <link rel="stylesheet" href="/css/admin_custom.css"> --}}
-@vite('resources/css/app.css')
+<link rel="stylesheet" href="{{ asset('build/assets/app-96e1218c.css') }}">
 @stop
 
 @section('content')
