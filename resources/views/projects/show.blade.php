@@ -59,11 +59,11 @@
             <div class="card shadow-sm h-100 hover-scale">
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center mb-2">
-                        <h5 class="fw-bold text-primary me-3">{{$element->keyword }}</h5>
+                        <h5 class="fw-bold text-primary me-3">{{ $element->keyword }}</h5>
                         <div class="d-flex flex-shrink-0">
                             @if($element->project)
                             <a href="{{ route('elements.edit', $element->id) }}"
-                                class="btn border-0 bg-transparent text-secondary mr-3"
+                                class="btn border-0 bg-transparent text-secondary me-3"
                                 title="子要素を編集"
                                 style="font-size: 1.6rem;">
                                 <i class="fa fa-pencil-square-o"></i>
@@ -99,4 +99,12 @@
                             @endforeach
                         </tbody>
                     </table>
-                </div>
+                </div> <!-- /.card-body -->
+            </div> <!-- /.card -->
+        </div> <!-- /.col-md-6 -->
+        @endforeach
+    </div> <!-- /.row -->
+    @endif
+
+</div> <!-- /.container -->
+@stop
