@@ -61,14 +61,12 @@
                     <div class="d-flex justify-content-between align-items-center mb-2">
                         <h5 class="fw-bold text-primary me-3">{{ $element->keyword }}</h5>
                         <div class="d-flex flex-shrink-0">
-                            @if($element->project)
                             <a href="{{ route('elements.edit', $element->id) }}"
                                 class="btn border-0 bg-transparent text-secondary me-3"
                                 title="子要素を編集"
                                 style="font-size: 1.6rem;">
                                 <i class="fa fa-pencil-square-o"></i>
                             </a>
-                            @endif
                             <button class="btn delete-element-icon border-0 bg-transparent text-secondary"
                                 data-id="{{ $element->id }}"
                                 title="子要素を削除"
@@ -107,4 +105,69 @@
     @endif
 
 </div> <!-- /.container -->
+@stop
+
+@section('js')
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
+
+        // プロジェクト削除
+        document.querySelectorAll('.delete-project').forEach(btn => {
+            btn.addEventListener('click', async () => {
+                const id = btn.dataset.id;
+                if (!id) return;
+                if (!confirm('プロジェクトを削除します。よろしいですか？')) return;
+
+                try {
+                    const res = await fetch(`/projects/${id}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'X-CSRF-TOKEN': csrfToken,
+                            'Accept': 'application/json'
+                        }
+                    });
+                    const data = await res.json();
+                    if (data.success) {
+                        alert('プロジェクトを削除しました');
+                        location.href = '/projects';
+                    } else {
+                        alert(data.message || '削除できませんでした');
+                    }
+                } catch (e) {
+                    console.error(e);
+                    alert('削除に失敗しました');
+                }
+            });
+        });
+
+        // 子要素削除
+        document.querySelectorAll('.delete-element-icon').forEach(btn => {
+            btn.addEventListener('click', async () => {
+                const id = btn.dataset.id;
+                if (!id) return;
+                if (!confirm('子要素を削除します。よろしいですか？')) return;
+
+                try {
+                    const res = await fetch(`/elements/${id}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'X-CSRF-TOKEN': csrfToken,
+                            'Accept': 'application/json'
+                        }
+                    });
+                    const data = await res.json();
+                    if (data.success) {
+                        document.getElementById(`element-${id}`)?.remove();
+                    } else {
+                        alert(data.message || '削除できませんでした');
+                    }
+                } catch (e) {
+                    console.error(e);
+                    alert('削除に失敗しました');
+                }
+            });
+        });
+    });
+</script>
 @stop
