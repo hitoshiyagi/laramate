@@ -61,7 +61,7 @@ Laravel の学習および実務開発を進める中で、以下の課題を感
 ## デモアプリ
 以下のURLから、実際にアプリを操作できます。
 
-👉 https://jobscore-e7df38e9fb61.herokuapp.com/landing  
+👉 https://laramate-c9a6d2515e14.herokuapp.com/  
   
 ※ URLを知っていれば誰でも閲覧できるデモ環境です。  
 ※ PCブラウザ推奨（管理画面UIのため）
