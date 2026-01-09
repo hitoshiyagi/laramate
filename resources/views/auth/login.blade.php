@@ -57,7 +57,7 @@
                                     ログイン
                                 </button>
 
-                                <div class="mt-2 text-muted" style="font-size: 0.8rem;">
+                                <div class="mt-3 text-muted" style="font-size: 0.8rem;">
                                     <strong>【テスト用アカウント】</strong>
                                     <div class="mt-1">メールアドレス: test@example.com</div>
                                     <div>パスワード: test1234</div>
