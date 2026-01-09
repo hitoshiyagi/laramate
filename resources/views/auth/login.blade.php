@@ -54,8 +54,13 @@
                         <div class="row mb-0">
                             <div class="col-md-8 offset-md-4">
                                 <button type="submit" class="btn btn-primary">
-                                   ログイン
+                                    ログイン
                                 </button>
+
+                                <div class="mt-2 text-muted" style="font-size: 0.8rem;">
+                                    <p class="mb-0">【テスト用アカウント】</p>
+                                    <span>ID: test@example.com / Pass: test1234</span>
+                                </div>
 
                                 @if (Route::has('password.request'))
                                 <a class="btn btn-link" href="{{ route('password.request') }}">
