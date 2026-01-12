@@ -69,7 +69,7 @@
                     <div class="card-body">
                         <i class="fas fa-tags fa-2x text-primary float-end"></i>
                         <h3 class="card-title fw-bold text-primary mb-3">迷わない！要素名の自動生成</h3>
-                        <p class="card-text lead">作りたいアプリの「テーマ」を入力するだけで、テーブル名、モデル名、コントローラ名**をLaravelの命名規則に沿って自動生成。すぐに開発に取りかかれます。</p>
+                        <p class="card-text lead">作りたいアプリの「テーマ」を入力するだけで、テーブル名、モデル名、コントローラ名をLaravelの命名規則に沿って自動生成。すぐに開発に取りかかれます。</p>
                         <div class="bg-light p-3 mt-3 border-start border-primary border-5 code-example">
                             <p class="text-muted small mb-1">例: テーマ「ブログ記事」</p>
                             <code class="d-block">
@@ -94,7 +94,7 @@
                 </div>
             </div>
 
-            {{-- 機能3: CRUD作成手順の提示 --}}
+            <!-- {{-- 機能3: CRUD作成手順の提示 --}}
             <div class="col-md-12">
                 <div class="card p-4 feature-card shadow-lg">
                     <div class="card-body">
@@ -111,7 +111,7 @@
                         </div>
                     </div>
                 </div>
-            </div>
+            </div> -->
         </div>
     </section>
 
